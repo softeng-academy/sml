@@ -1,0 +1,25 @@
+root: true
+env:
+  node: true
+  browser: true
+  es6: true
+parserOptions:
+  parser: babel-eslint
+  sourceType: module
+  ecmaVersion: 2020
+  ecmaFeatures:
+    impliedStrict: true
+extends:
+  - eslint:recommended
+  - plugin:vue/essential
+rules: {
+  quotes:                           [ "error", "single", { avoidEscape: true, allowTemplateLiterals: true } ],
+  vue/multi-word-component-names:   'off',
+  indent:                           [ "error", 4 ],
+  prefer-const:                     "off",
+  no-multi-spaced:                  "off",
+  brace-style:                      [ "error", "stroustrup", {"allowSingleLine": true} ],
+  vue/script-indent:                ["error", 4, {"baseIndent": 1, "switchCase": 1, "ignores": []} ],
+  nonblock-statement-body-position: ["error", "below"]
+}
+overrides: [ {"files": ["*.vue"], "rules": { "indent": "off"}} ]

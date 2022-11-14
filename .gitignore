@@ -1,0 +1,13 @@
+#   Dependencies
+node_modules
+package-lock.json
+
+#   Log files
+npm-debug.log*
+
+#   Editor directories and files
+.vscode
+
+#   Distribution files
+/dist_electron
+/dist
