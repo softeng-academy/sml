@@ -57,7 +57,7 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-around;
-                align-items: center;
+                align-items: flex-start;
                 gap: 16px;
             }
             .download .item-row .os-icon {
@@ -73,9 +73,10 @@
                 padding: 15px;
                 text-decoration: none;
                 flex: 1 1 0;
+                color: #6699cc;
             }
             .download .download-item:visited, .download-item:active, .download-item:hover  {
-                color: inherit;
+                color: #6699cc;
             }
             .header .logo {
                 margin-right: 40px;
@@ -251,10 +252,10 @@
                                 <img class="os-icon" src="linux.png" alt="Linux"/>
                                 Linux <br>Version {{latestTag}}
                             </a>
-                            <div href="https://google.com" class="download-item" target="_blank">
+                            <a href="" class="download-item" target="_blank" onclick="return false;">
                                 <img class="os-icon" src="macos.png" alt="MacOS"/>
-                                Soon coming: <br>MacOs <br>Version {{latestTag}}
-                            </div>
+                                MacOs <br>Version {{latestTag}}
+                            </a>
                         </div>
                     </div>
                     <div class="spacer"></div>
