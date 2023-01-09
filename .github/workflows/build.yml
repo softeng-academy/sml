@@ -1,0 +1,34 @@
+name: Build executables
+on: [push, pull_request]
+
+jobs:
+  Build_windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: Install dependencies
+      run: npm install
+    - name: Build for Windows
+      run: npm run electron:build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sml-win
+        path: dist_electron/SML.exe
+  Build_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: Install dependencies
+      run: npm install
+    - name: Build for Linux
+      run: npm run electron:build -- --publish never
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sml-lnx
+        path: dist_electron/SML
