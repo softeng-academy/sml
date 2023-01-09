@@ -1,0 +1,37 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    name: Publish exe
+    runs-on: windows-latest
+    steps:
+    - name: Download artifact
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: build.yml
+        workflow_conclusion: success
+        branch: master
+        event: push
+        if_no_artifact_found: fail
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        workflow: build.yml
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: sml-win/SML.exe
+        tag: ${{ github.ref }}
+        overwrite: true      
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        workflow: build.yml
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: sml-lnx/SML
+        tag: ${{ github.ref }}
+        overwrite: true
