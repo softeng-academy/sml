@@ -1,9 +1,344 @@
+<!DOCTYPE html>
+<!--
+**  Vingester ~ Ingest Web Contents as Video Streams
+**  Copyright (c) 2021-2022 Dr. Ralf S. Engelschall <rse@engelschall.com>
+**  Licensed under GPL 3.0 <https://spdx.org/licenses/GPL-3.0-only>
+-->
 <html>
     <head>
-        <title>Simple Modeling Language</title>
+        <title>Simple Modeling Lanuage</title>
         <meta charset="UTF-8"/>
+        <link rel="shortcut icon" href="logo.png">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Overlock:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@3.2.33/dist/vue.global.prod.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"/>
+        <style type="text/css">
+            html {
+                width: 100vw;
+                height: auto;
+                margin: 0;
+                overflow: overlay;
+                font-family: 'Overlock';
+            }
+            body {
+                background-repeat: no-repeat;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width: 100vw;
+                height: auto;
+                margin: 0;
+            }
+            .header {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 40px;
+            }
+            .download {
+                line-height: 120%;
+                font-size: 12pt;
+                border: 1px solid #6699cc;
+                border-radius: 10px;
+                padding: 8px;
+                color: #6699cc;
+                margin-bottom: 16px;
+                text-align: center;
+            }
+            .download .item-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                gap: 16px;
+            }
+            .download .item-row .os-icon {
+                width: 45px;
+                height: 45px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+            .download .download-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 15px;
+                text-decoration: none;
+                flex: 1 1 0;
+            }
+            .download .download-item:visited, .download-item:active, .download-item:hover  {
+                color: inherit;
+            }
+            .header .logo {
+                margin-right: 40px;
+            }
+            .header .logo .image {
+                height: 100px;
+            }
+            .header .title {
+                color: #ffffff;
+                font-weight: bold;
+                font-style: italic;
+                font-size: 80px;
+                font-family: Overlock;
+                letter-spacing: -3px;
+            }
+            .subtitle {
+                color: #ffffff;
+                font-weight: bold;
+                font-style: italic;
+                font-size: 30px;
+                font-family: Caveat;
+                position: absolute;
+                transform: rotate(-35deg);
+                top: -64px;
+                left: -200px;
+            }
+            .screenshot {
+                width: 880px;
+            }
+            footer {
+                margin-top: 20px;
+                font-size: 10pt;
+                text-align: center;
+                color: #909090;
+            }
+            footer a,
+            footer a:visited {
+                color: #c0c0c0;
+                text-decoration: none;
+            }
+            footer a:hover {
+                color: #ffffff;
+                text-decoration: none;
+            }
+            .social {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 0px;
+            }
+            .social .github-stars {
+                margin-left: 10px;
+            }
+            .heading {
+                width: 100%;
+                background: linear-gradient(#282828, #000000);
+                display: flex;
+                justify-content: center;                
+            }
+            .heading-wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding-top: 15px;
+                padding-bottom: 15px;
+                gap: 8px;
+                height: calc(100vh - 30px);
+                justify-content: flex-start;
+            }
+            .heading2 {
+                max-width: 80%;
+                min-width: 1000px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+            }
+            main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            .feature-container {
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+                width: 100%;
+                padding-top: 16px;
+                padding-bottom: 16px;
+                gap: 32px;
+            }
+
+            .feature-container .imgage-content {
+                flex: 5 1 0;
+                overflow: auto;
+            }
+            .feature-container .text-content {
+                flex: 3 1 0;
+                padding: 16px;
+            }
+            footer {
+                height: 32px;
+                width: 100%;
+                background: linear-gradient(#282828, #000000);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .spacer {
+                flex: 1;
+            }
+            section.heading2 > h2 {
+                font-size: 60px;
+                font-family: Overlock;
+                font-weight: bold;
+            }
+            .feature-button-wrapper {
+                display: flex;
+                justify-content: end;
+                width: 100%;
+            }
+            .feature-button {
+                line-height: 120%;
+                font-size: 12pt;
+                border: 1px solid #6699cc;
+                border-radius: 10px;
+                padding: 8px;
+                color: #6699cc;
+                margin-bottom: 16px;
+                text-align: center;
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
-        <h1>Simple Modeling Language</h1>
+        <main>
+            <section class="heading">
+                <div class="heading-wrapper">
+                    <div class="social">
+                        <div class="github-stars">
+                            <a href="https://github.com/softeng-academy/sml">
+                                <img style="position: absolute; top: 0; right: 0; border: 0; z-index: 2000;"
+                                     src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+                                     alt="Fork me on GitHub"
+                                     data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"/>
+                            </a>
+                            <iframe id="starbutton" src="https://ghbtns.com/github-btn.html?user=softeng-academy&repo=sml&type=star&count=true"
+                                frameborder="0" scrolling="0" width="100px" height="20px">
+                            </iframe>
+                        </div>
+                    </div>
+                    <div class="header">
+                        <div class="logo">
+                            <img class="image" src="logo.png" alt="Simple Modeling Language"/>
+                        </div>
+                        <div class="title">
+                            Simple Modeling Language
+                        </div>
+                    </div>
+                
+                    <div class="download">
+                        <b>Download</b>
+                        <div class="item-row">
+                            <a href="https://google.com" class="download-item" target="_blank">
+                                <img class="os-icon" src="windows.png" alt="Windows"/>
+                                Windows <br>Version 1.0.0
+                            </a>
+                            <a href="https://google.com" class="download-item" target="_blank">
+                                <img class="os-icon" src="linux.png" alt="Linux"/>
+                                Linux <br>Version 1.0.0
+                            </a>
+                            <a href="https://google.com" class="download-item" target="_blank">
+                                <img class="os-icon" src="macos.png" alt="MacOS"/>
+                                MacOs <br>Version 1.0.0
+                            </a>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+                    <div style="position: relative;">
+                        <div class="subtitle">
+                            Create your architecture diagrams <br> with a one of a kind editor!
+                        </div>
+                        <img class="screenshot" src="screenshot.png" alt="Simple Modeling Language Editor"/>
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="feature-button-wrapper">
+                        <div class="feature-button" onclick="window.document.querySelectorAll('section.heading2')[0].scrollIntoView({behavior: 'smooth'})">
+                           Show me the features
+                        </div>
+                    </div>
+                </div>
+            </section>
+    
+            <section class="heading2">
+                <h2>Features</h2>
+                <div class="feature-container">
+                    <img class="imgage-content" src="screenshot.png" alt="Simple Modeling Language Editor"/>
+                    <div class="text-content">
+                        <div>
+                            <h2> Only editor available that allows full support of user interface interactions and a Domain Specific Language (DSL)!</h2>
+                            <p>What is a DSL and how do I use it? Visit our SML Cheatsheet to get going.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-container">
+                    <div class="text-content">
+                        <h2> Edit your diagrams through an user interface</h2>
+                        <p>You can click on boxes, drag or embed them, create links between boxes or simply reposition them. All with your mouse.</p>
+                    </div>
+                    <video class="imgage-content" autoplay muted>
+                        <source src="mov1.mkv" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="feature-container">
+                    <video class="imgage-content" autoplay muted>
+                        <source src="mov2.mkv" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="text-content">
+                        <h2>Use our Domain Specific Language to interact with the diagram</h2>
+                        <p>A diagram is represented through its DSL. User interfaces are not your thing? Just write your diagram down and enjoy a majority of the Visual Studio Code shortcuts!</p>
+                    </div>
+                </div>
+                <div class="feature-container">
+                    <div class="text-content">
+                        <h2>One format to rule them all</h2>
+                        <p>Export your diagram as a .sml.svg file, open it in your browser, drag it into your powerpoint, or open it again in the editor to continue working on the diagram!</p>
+                    </div>
+                    <img class="feature-screenshot imgage-content" src="sml-example.sml.svg" alt="Simple Modeling Language Editor"/>
+                </div>
+            </section>
+
+            <footer>
+                <div>
+                    Copyright &copy; 2021-2022  <a href="https://github.com/softeng-academy"> Software Engineering Academy</a><br/>
+                </div>
+            </footer>
+        </main>
     </body>
+    <script type="text/javascript">
+        axios.get("https://raw.githubusercontent.com/rse/vingester/master/VERSION.md").then(({ data }) => {
+            let versions = []
+            data.replace(
+                /^\|\s+([0-9]+(?:(?:a|b|rc|\.)[0-9]+)*)\s+\|\s+(\d{4}-\d{2}-\d{2})\s+\|\s+(\S+)\s+\|\s*$/mg,
+                (_, version, date, type) => { versions.push({ version, date, type }) })
+            current = versions.find((v) => v.type === "current")
+
+            function test () {
+                console.log("AAAA")
+            }
+        
+            Vue.createApp({
+                data () {
+                    return {
+                        current
+                    }
+                }
+            }).mount("body")
+        })
+    </script>
 </html>
