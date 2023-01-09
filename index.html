@@ -172,7 +172,7 @@
                 gap: 32px;
             }
 
-            .feature-container .imgage-content {
+            .feature-container .image-content {
                 flex: 5 1 0;
                 overflow: auto;
             }
@@ -243,18 +243,18 @@
                     <div class="download">
                         <b>Download</b>
                         <div class="item-row">
-                            <a href="https://google.com" class="download-item" target="_blank">
+                            <a href="https://github.com/softeng-academy/sml/releases/latest/download/sml.exe" class="download-item" target="_blank">
                                 <img class="os-icon" src="windows.png" alt="Windows"/>
-                                Windows <br>Version 1.0.0
+                                Windows <br>Version {{latestTag}}
                             </a>
-                            <a href="https://google.com" class="download-item" target="_blank">
+                            <a href="https://github.com/softeng-academy/sml/releases/latest/download/sml" class="download-item" target="_blank">
                                 <img class="os-icon" src="linux.png" alt="Linux"/>
-                                Linux <br>Version 1.0.0
+                                Linux <br>Version {{latestTag}}
                             </a>
-                            <a href="https://google.com" class="download-item" target="_blank">
+                            <div href="https://google.com" class="download-item" target="_blank">
                                 <img class="os-icon" src="macos.png" alt="MacOS"/>
-                                MacOs <br>Version 1.0.0
-                            </a>
+                                Soon coming: <br>MacOs <br>Version {{latestTag}}
+                            </div>
                         </div>
                     </div>
                     <div class="spacer"></div>
@@ -276,7 +276,7 @@
             <section class="heading2">
                 <h2>Features</h2>
                 <div class="feature-container">
-                    <img class="imgage-content" src="screenshot.png" alt="Simple Modeling Language Editor"/>
+                    <img class="image-content" src="screenshot.png" alt="Simple Modeling Language Editor"/>
                     <div class="text-content">
                         <div>
                             <h2> Only editor available that allows full support of user interface interactions and a Domain Specific Language (DSL)!</h2>
@@ -289,13 +289,13 @@
                         <h2> Edit your diagrams through an user interface</h2>
                         <p>You can click on boxes, drag or embed them, create links between boxes or simply reposition them. All with your mouse.</p>
                     </div>
-                    <video class="imgage-content" autoplay muted>
+                    <video class="image-content" autoplay muted>
                         <source src="mov1.mkv" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
                 <div class="feature-container">
-                    <video class="imgage-content" autoplay muted>
+                    <video class="image-content" autoplay muted>
                         <source src="mov2.mkv" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
@@ -309,7 +309,7 @@
                         <h2>One format to rule them all</h2>
                         <p>Export your diagram as a .sml.svg file, open it in your browser, drag it into your powerpoint, or open it again in the editor to continue working on the diagram!</p>
                     </div>
-                    <img class="feature-screenshot imgage-content" src="sml-example.sml.svg" alt="Simple Modeling Language Editor"/>
+                    <img class="feature-screenshot image-content" src="sml-example.sml.svg" alt="Simple Modeling Language Editor"/>
                 </div>
             </section>
 
@@ -321,21 +321,12 @@
         </main>
     </body>
     <script type="text/javascript">
-        axios.get("https://raw.githubusercontent.com/rse/vingester/master/VERSION.md").then(({ data }) => {
-            let versions = []
-            data.replace(
-                /^\|\s+([0-9]+(?:(?:a|b|rc|\.)[0-9]+)*)\s+\|\s+(\d{4}-\d{2}-\d{2})\s+\|\s+(\S+)\s+\|\s*$/mg,
-                (_, version, date, type) => { versions.push({ version, date, type }) })
-            current = versions.find((v) => v.type === "current")
-
-            function test () {
-                console.log("AAAA")
-            }
-        
+        axios.get("https://api.github.com/repos/softeng-academy/sml/releases/latest").then(({ data }) => {
+            let latestTag = data["tag_name"]
             Vue.createApp({
                 data () {
                     return {
-                        current
+                        latestTag
                     }
                 }
             }).mount("body")
