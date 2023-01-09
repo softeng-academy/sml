@@ -12,6 +12,20 @@ module.exports = {
                     'target': [{ 'target': 'portable' }],
                     'icon': 'logo.png'
                 },
+                "linux": {
+                    "target": [ { "target": "AppImage" } ],
+                    "artifactName": "SML",
+                    'icon': 'logo.png'
+                },
+                "mac": {
+                    "identity": null,
+                    "target": [ { "target": "dir" } ],
+                    "icon": "app-res-icon.png",
+                },
+                "portable": {
+                    "useZip": false,
+                    "artifactName": 'SML.exe'
+                },
             }
         }
     },
