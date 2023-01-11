@@ -19,10 +19,10 @@ protocol.registerSchemesAsPrivileged([
 let win
 async function createWindow () {
     win = new BrowserWindow({
-        width: 1920,
+        width:  1920,
         height: 1080,
-        'min-height': 800,
-        'min-width': 800,
+        minHeight: 800,
+        minWidth:  800,
         icon: __dirname + '/../src/resources/images/logo.png',
         autoHideMenuBar: true,
         frame: false,
