@@ -1,5 +1,9 @@
 name: Build executables
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
 
 jobs:
   Build_windows:
