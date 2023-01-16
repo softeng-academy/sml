@@ -89,8 +89,19 @@
             //  Sends message to electron to close
             close () {
                 electron.ipcRenderer.send('close')
+            },
+
+            // Request window status from electron on resize event
+            getWindowStatus () {
+                electron.ipcRenderer.send('windowStatus')
             }
-        }
+        },
+        created() {
+            window.addEventListener('resize', this.getWindowStatus);
+        },
+        destroyed() {
+            window.removeEventListener('resize', this.getWindowStatus);
+        },
     }
 </script>
 
