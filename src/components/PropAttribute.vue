@@ -1,5 +1,5 @@
 <template>
-    <v-row align="center" class="pl-4">
+    <v-row align="center">
         <v-col cols="5" class="pt-0">
             <v-text-field
                 @input="$emit('changeAttributeLabel', { label, id })"

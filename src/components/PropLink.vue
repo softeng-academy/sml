@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-row align="center" class="pl-4">
+        <v-row align="center">
             <v-col cols="5" class="pt-0">
                 <v-select
                     label="To"
@@ -32,7 +32,7 @@
 
         <v-expand-transition>
             <div v-show="show">
-                <v-row align="center" class="pl-4">
+                <v-row align="center">
                     <v-col cols="3">
                         <v-select
                             item-value="id"

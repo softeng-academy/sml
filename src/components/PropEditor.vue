@@ -1,9 +1,9 @@
 <template>
     <div class="prop-container">
         <v-card v-if="currentNode" class="prop-container-card elevation-0">
-            <div>
-                <v-row class="prop-container-padded-row">
-                    <v-col cols="6" class="pb-0">
+            <v-container>
+                <v-row>
+                    <v-col cols="5" class="pb-0">
                         <v-text-field
                             @input="applyNameChange"
                             v-model="props.name"
@@ -12,7 +12,7 @@
                         </v-text-field>
                     </v-col>
 
-                    <v-col cols="4" class="pb-0">
+                    <v-col cols="5" class="pb-0">
                         <v-select
                             v-model="props.type"
                             :items="possibleTypes"
@@ -29,16 +29,14 @@
                     </v-col>
                 </v-row>
 
-                <v-row align="center" class="prop-container-padded-row">
-                    <v-col cols="2" class="pb-0 pt-0">
+                <v-row align="center">
+                    <v-col cols="12" class="pb-0 pt-0 pl-1 horizontal-flexBox">
                         <v-btn @click="addAttrPropDialog = true" icon>
                             <v-icon>
                                 mdi-plus
                             </v-icon>
                         </v-btn>
-                    </v-col>
 
-                    <v-col cols="10" class="pb-0 pt-0">
                         <v-card-text class="text-subtitle-1 font-weight-bold pb-0 pt-0">
                             Attributes
                         </v-card-text>
@@ -58,15 +56,14 @@
                 
                 <v-divider class="mt-3"/>
 
-                <v-row align="center" class="prop-container-padded-row">
-                    <v-col cols="2" class="pb-0">
+                <v-row align="center">
+                    <v-col cols="12" class="pb-0 pl-1 horizontal-flexBox">
                         <v-btn @click="addLinkPropDialog = true" icon>
                             <v-icon>
                                 mdi-plus
                             </v-icon>
                         </v-btn>
-                    </v-col>
-                    <v-col cols="10" class="pb-0">
+
                         <v-card-text class="text-subtitle-1 font-weight-bold">Links</v-card-text>
                     </v-col>
                 </v-row>
@@ -87,7 +84,7 @@
                     :tag="link.tag"
                     :possibleTargets="possibleTargets"
                 />
-            </div>
+            </v-container>
         </v-card>
 
         <v-dialog v-model="addLinkPropDialog" width="500">
@@ -417,6 +414,12 @@
     }
 
     .vertical-center {
+        display: flex;
+        align-items: center;
+    }
+
+    .horizontal-flexBox {
+        flex-direction: row;
         display: flex;
         align-items: center;
     }
