@@ -141,8 +141,16 @@ export default class sml {
         const astSignature = node.child(0)
         const oldLabel = astSignature.get('label')
 
-        //  Set new label and shift
-        //this._shiftAllFollowing(newLabel.length - oldLabel.length, astSignature.pos().line, astSignature)
+        //  Find all spec-less signatures, i.e. attributes or links 
+        let associations = this.astq.query(this.ast, `// Signature [!+// Spec ]`)
+
+        //  Change their type if it matches the old name of the box (element) to the new one
+        associations.forEach(asso => {
+            if (asso.get("type") === oldLabel)
+                asso.set("type", newLabel)
+        })
+        
+        //  Set new label
         astSignature.set('label', newLabel)
 
         //  Update DSL and gui

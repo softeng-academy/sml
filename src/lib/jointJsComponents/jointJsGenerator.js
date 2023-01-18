@@ -1,6 +1,7 @@
 import { images } from '../../resources/images/boxTypes'
 export default class JointJsGenerator {
     constructor (config, joint, graph, astq, sml, linkRouter, darkMode) {
+        this.associations    = []
         this.headerOffset    = config.headerOffset
         this.attributeOffset = config.attributeOffset
         this.boxStdSize      = config.boxStdSize
