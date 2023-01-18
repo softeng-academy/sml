@@ -5,6 +5,7 @@ import ASTQ           from 'astq'
 import PARSER         from './parser.js'
 import FORMATTER      from './formatter.js'
 import JOINTJSMANAGER from './jointJsManager.js'
+import LAYOUTER       from './layouter.js'
 
 export default class sml {
     constructor (dsl, holder, updateEditor, openLinkConfig, initiatePropEditor, showError, removeLinkPropEditor, settings, darkMode, changeCursorPos) {
@@ -27,6 +28,7 @@ export default class sml {
         this.astq      = new ASTQ()
         this.parser    = new PARSER   (this.asty, this.astq)
         this.formatter = new FORMATTER(this.asty, this.astq)
+        this.layouter  = new LAYOUTER(this, this.astq, this.asty)
 
         let parsing = this.parser.parse(dsl)
         let result  = parsing.result
@@ -39,6 +41,9 @@ export default class sml {
                 this._regenerateDSLAndUpdate(this.ast)
         }
 
+        //  Apply layouting
+        this.layouter.positionPositionlessElements(this.ast, this.jointJsManager.getPaper(), this.jointJsManager.getGraph())
+        
         //  Show errors in case some appeared
         this.showError(result.warnings, result.errors)
     }
@@ -46,6 +51,11 @@ export default class sml {
     updateDSL (dsl) {
         this.dsl = dsl
         this._generateAST(dsl)
+    }
+
+    //  Generates DSL from AST and AST again from DSL
+    regenerateDSLOnASTChanges (ast) {
+        this._regenerateDSLAndUpdate(ast)
     }
 
     //  Generate AST from DSL
@@ -57,6 +67,7 @@ export default class sml {
             this.initiatePropEditor()
         }
         this.showError(output.result.warnings, output.result.errors)
+        this.layouter.positionPositionlessElements(this.ast, this.jointJsManager.getPaper(), this.jointJsManager.getGraph())
     }
 
     //  Parse DSL from AST
@@ -307,7 +318,7 @@ export default class sml {
                     }
                     else {
                         if (x > 0 && y > 0) {
-                            //  Create new posTag and shift
+                            //  Create new posTag
                             const newPosTag = this.asty.create('Tag').set({ name: 'pos', args: [ x / 10, y / 10 ], id: crypto.randomUUID() })
                             if (node.child(0).get('space4').length === 0)                            
                                 newPosTag.set('space0', ' ')

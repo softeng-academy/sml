@@ -134,20 +134,6 @@ export default class JointJsEventHandler {
 
                 //  Reset for next embedding
                 this.plannedParentCell = null
-                
-                /*
-                //  Update cursors to still grab if user keeps on pressing ctrl
-                let cursor = ''
-                if (this.ctrlDown)
-                    cursor = 'grab'
-                else {
-                    cursor = 'move'
-                    this.nestingActive = false
-                }
-                const elements = document.querySelectorAll('.joint-element')
-                for (let i = 0; i < elements.length; i++)
-                    elements[i].style.cursor = cursor
-                    */
             }
             this.currentlyDraggedCell = null
         })

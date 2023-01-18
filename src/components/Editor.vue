@@ -33,7 +33,7 @@
                 parsingTimeout: null,
                 modelMarkers: [],
                 modelMarkerTimeout: null,
-                exampleDSL: `OrgUnit:entity @pos(6,6) {
+                exampleDSL: `OrgUnit:entity @pos(10,5) {
         id:string
         initials:string
         name:string
@@ -42,7 +42,7 @@
         members:Person [0..n] @dock("rb","lb")
     }
 
-    Person:entity @pos(45,6) {
+    Person:entity @pos(45,5) {
         id:string
         initials:string
         name:string
