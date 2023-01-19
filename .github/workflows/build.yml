@@ -17,10 +17,12 @@ jobs:
       run: npm install
     - name: Build for Windows
       run: npm run electron:build
+    - name: Create zip
+      run: ar.exe -a -c -f SML-win.zip dist_electron/SML.exe
     - uses: actions/upload-artifact@v3
       with:
         name: sml-win
-        path: dist_electron/SML.exe
+        path: SML-win.zip
   Build_linux:
     runs-on: ubuntu-latest
     steps:
@@ -32,10 +34,12 @@ jobs:
       run: npm install
     - name: Build for Linux
       run: npm run electron:build -- --publish never
+    - name: Create zip
+      run: zip -r SML-lnx.zip dist_electron/SML
     - uses: actions/upload-artifact@v3
       with:
         name: sml-lnx
-        path: dist_electron/SML
+        path: SML-lnx.zip
   Build_macos:
     runs-on: macos-latest
     steps:
@@ -47,9 +51,9 @@ jobs:
       run: npm install
     - name: Build for MacOS
       run: npm run electron:build -- --publish never
-    - name: Check for file
-      run: ls -R dist_electron
+    - name: Create zip
+      run: zip -r SML-mac.zip dist_electron/mac
     - uses: actions/upload-artifact@v3
       with:
         name: sml-mac
-        path: dist_electron/mac
+        path: SML-mac.zip
