@@ -36,3 +36,20 @@ jobs:
       with:
         name: sml-lnx
         path: dist_electron/SML
+  Build_macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: Install dependencies
+      run: npm install
+    - name: Build for MacOS
+      run: npm run electron:build -- --publish never
+    - name: Check for file
+      run: ls -R
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sml-mac
+        path: dist_electron/SML
