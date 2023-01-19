@@ -48,8 +48,8 @@ jobs:
     - name: Build for MacOS
       run: npm run electron:build -- --publish never
     - name: Check for file
-      run: ls -R
+      run: ls -R dist_electron
     - uses: actions/upload-artifact@v3
       with:
         name: sml-mac
-        path: dist_electron/SML
+        path: dist_electron/mac
