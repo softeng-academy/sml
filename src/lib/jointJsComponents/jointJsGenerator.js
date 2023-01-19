@@ -59,9 +59,6 @@ export default class JointJsGenerator {
         let startXIndex = 50
         this.astq.query(ast, `/ Element [ / Spec ] `).forEach((node) => {
             const data = this._recGenerate(node, 1, 0, startXIndex, 0)
-            //  Currently disabled until formatter is implemented
-            // startXIndex += data.box.size().width + 100
-            this.sml.addPositionTag(data.box, data.box.position().x, data.box.position().y, true)
             data.box.prop('ast', node)
             data.box.toFront({ deep: true })
         })
