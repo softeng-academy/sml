@@ -20,7 +20,7 @@ module.exports = {
                 "mac": {
                     "identity": null,
                     "target": [ { "target": "dir" } ],
-                    "icon": "app-res-icon.png",
+                    "icon": "logo.png",
                 },
                 "portable": {
                     "useZip": false,
