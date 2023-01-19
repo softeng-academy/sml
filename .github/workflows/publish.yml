@@ -19,19 +19,27 @@ jobs:
         branch: master
         event: push
         if_no_artifact_found: fail
-    - name: Upload binaries to release
+    - name: Upload binaries to release - Windows
       uses: svenstaro/upload-release-action@v2
       with:
         workflow: build.yml
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: sml-win/SML.exe
+        file: sml-win/SML-win.zip
         tag: ${{ github.ref }}
         overwrite: true      
-    - name: Upload binaries to release
+    - name: Upload binaries to release - Linux
       uses: svenstaro/upload-release-action@v2
       with:
         workflow: build.yml
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: sml-lnx/SML
+        file: sml-lnx/SML-lnx.zip
+        tag: ${{ github.ref }}
+        overwrite: true
+    - name: Upload binaries to release - MacOS
+      uses: svenstaro/upload-release-action@v2
+      with:
+        workflow: build.yml
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: sml-mac/SML-mac.zip
         tag: ${{ github.ref }}
         overwrite: true
