@@ -35,7 +35,7 @@ jobs:
     - name: Build for Linux
       run: npm run electron:build -- --publish never
     - name: Create ZIP for Linux
-      run: zip -r SML-lnx.zip dist_electron/SML
+      run: cd dist_electron; zip -r SML-lnx.zip SML
     - uses: actions/upload-artifact@v3
       with:
         name: sml-lnx
@@ -52,7 +52,7 @@ jobs:
     - name: Build for MacOS
       run: npm run electron:build -- --publish never
     - name: Create ZIP for macOS
-      run: zip -r SML-mac.zip dist_electron/mac
+      run: cd dist_electron; zip -r SML-mac.zip mac
     - uses: actions/upload-artifact@v3
       with:
         name: sml-mac
