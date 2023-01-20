@@ -39,7 +39,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: sml-lnx
-        path: SML-lnx.zip
+        path: dist_electron/SML-lnx.zip
   Build_macos:
     runs-on: macos-latest
     steps:
@@ -56,4 +56,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: sml-mac
-        path: SML-mac.zip
+        path: dist_electron/SML-mac.zip
