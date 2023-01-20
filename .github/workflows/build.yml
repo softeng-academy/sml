@@ -52,7 +52,7 @@ jobs:
     - name: Build for MacOS
       run: npm run electron:build -- --publish never
     - name: Create ZIP for macOS
-      run: cd dist_electron; zip -r SML-mac.zip mac
+      run: cd dist_electron/mac; zip -r SML-mac.zip SML.app
     - uses: actions/upload-artifact@v3
       with:
         name: sml-mac
