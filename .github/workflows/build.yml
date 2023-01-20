@@ -17,7 +17,7 @@ jobs:
       run: npm install
     - name: Build for Windows
       run: npm run electron:build
-    - name: Create zip
+    - name: Create ZIP for Windows
       run: Compress-Archive dist_electron/SML.exe SML-win.zip 
     - uses: actions/upload-artifact@v3
       with:
@@ -34,7 +34,7 @@ jobs:
       run: npm install
     - name: Build for Linux
       run: npm run electron:build -- --publish never
-    - name: Create zip
+    - name: Create ZIP for Linux
       run: zip -r SML-lnx.zip dist_electron/SML
     - uses: actions/upload-artifact@v3
       with:
@@ -51,7 +51,7 @@ jobs:
       run: npm install
     - name: Build for MacOS
       run: npm run electron:build -- --publish never
-    - name: Create zip
+    - name: Create ZIP for macOS
       run: zip -r SML-mac.zip dist_electron/mac
     - uses: actions/upload-artifact@v3
       with:
