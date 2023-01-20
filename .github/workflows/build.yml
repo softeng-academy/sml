@@ -56,4 +56,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: sml-mac
-        path: dist_electron/SML-mac.zip
+        path: dist_electron/mac/SML-mac.zip
