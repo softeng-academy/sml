@@ -3,23 +3,46 @@
         <v-tooltip top>
             <template #activator="{ on, attrs }">
                 <v-btn class="editor-container-format-btn" icon dense v-bind="attrs" v-on="on" @click="format">
-                    <v-icon>
-                        mdi-format-list-text
-                    </v-icon>
+                    <v-icon small>mdi-format-list-text</v-icon>
                 </v-btn>
             </template>
-
-            <span>
-                Format Text
-            </span>
+            
+            <span>Format Text</span>
         </v-tooltip>
+        
+        <v-menu>
+            <template #activator="{ on: onMenu }">
+                <v-tooltip top>
+                    <template #activator="{ on: onTooltip }">
+                        <v-btn class="editor-container-example-btn" icon dense v-on="{ ...onMenu, ...onTooltip }">
+                            <v-icon small>mdi-text-box-check</v-icon>
+                        </v-btn>
+                    </template>
+
+                    <span>Examples</span>
+                </v-tooltip>
+            </template>
+            <v-list>
+                <v-list-item-group v-model="selectedExample">
+                    <v-list-item
+                        v-for="(example, i) in examples"
+                        :key="i"
+                        @click="selectExample(i)"
+                    >
+
+                    <v-list-item-title>{{ example.name }}</v-list-item-title>
+                    </v-list-item>
+                </v-list-item-group>
+            </v-list>
+        </v-menu>
 
         <div ref="editor" class="editor-container-editor"/>
     </div>
 </template>
 
 <script>
-    import * as monaco from 'monaco-editor'
+    import * as monaco                        from 'monaco-editor'
+    import {entityModelExample, stateDiagram} from '../resources/examples'
 
     export default {
         name: 'Editor',
@@ -33,6 +56,11 @@
                 parsingTimeout: null,
                 modelMarkers: [],
                 modelMarkerTimeout: null,
+                selectedExample: null,
+                examples: [
+                    { name: 'University Entity Model', dsl: entityModelExample},
+                    { name: 'Door State Example', dsl: stateDiagram},
+                ],
                 exampleDSL: `OrgUnit:entity @pos(10,5) {
         id:string
         initials:string
@@ -108,10 +136,17 @@
             execUpdate () {
                 this.timerRunning = false
                 this.currentNode = null
+                this.selectedExample = null
                 if (this.autoFormatting)
                     this.format()
                 else
                     this.sml.updateDSL(this.dsl)
+            },
+
+            //  Selects an example and parses corresponding DSL
+            selectExample(id) {
+                this.updateEditor(this.examples[id].dsl)
+                this.parse()
             },
 
             //  Handles updates of editor from UI
@@ -180,7 +215,7 @@
                         tokenizer: {
                             root: [
                                 [ /\bentity\b|\bstate\b|\blayer\b|\bslice\b|\btype\b|\benumeration\b/g, 'boxType' ],
-                                [ /\bint\b|\bstring\b|\bboolean\b/g, 'attributeType' ],
+                                [ /\bint\b|\bstring\b|\bboolean\b|\bfloat\b/g, 'attributeType' ],
                                 [ /@[a-zA-Z]*/g, 'tag' ],
                                 [ /{|}|\(|\)|\[|\]/g, 'bracket' ],
                                 [ /((\*|[0-9]+|[a-zA-Z])\.\.(\*|[0-9]+|[a-zA-Z]))|\*|\+|\?/g, 'cardinality' ],
@@ -347,14 +382,21 @@
         &-editor {
             width: 100%;
             height: 100%;
-            z-index: 20;
+            z-index: 3;
             position: absolute;
             top:0;
         }
         &-format-btn {
             position: absolute;
             top: 0;
-            z-index: 9999;
+            z-index: 5;
+            margin-top: -4px;
+            margin-left: -4px
+        }
+        &-example-btn {
+            position: absolute;
+            bottom: 0;
+            z-index: 5;
             margin-top: -4px;
             margin-left: -4px
         }
@@ -366,5 +408,4 @@
     .overflow-guard {
         border-radius: 5px;
     }
-
 </style>
