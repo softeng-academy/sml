@@ -58,7 +58,6 @@
             this.editorSetup()
 
             //  Register content change listener
-            let startUp = true
             this.editor.getModel().onDidChangeContent(() => {
                 //  Reset markers
                 monaco.editor.setModelMarkers(this.editor.getModel(), 'owner', [])
@@ -66,9 +65,7 @@
 
                 //  Only update if its origin is from the editor and not a change in the UI
                 //  to avoid infinite loop
-                if (!this.UIUpdate || startUp) {
-                    startUp = false
-                    this.currentNode = null
+                if (!this.UIUpdate) {
                     this.editorChanged = true
                     this.dsl = this.editor.getValue()
                     this.parse()
@@ -107,7 +104,6 @@
             //  Actual method to send DSL to the SML library, either with formatting of without
             execUpdate () {
                 this.timerRunning = false
-                this.currentNode = null
                 if (this.autoFormatting)
                     this.format()
                 else

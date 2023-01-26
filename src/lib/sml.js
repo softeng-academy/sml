@@ -76,14 +76,6 @@ export default class sml {
         this.updateEditor(this.dsl)
     }
 
-    //  DEPRECATED
-    //  Used if DSL needs to be generated from an AST and the change is not present in UI already (embedding)
-    _generateDSLAndUpdate (ast) {
-        this.dsl = this.formatter.format(ast, false)
-        this.updateEditor(this.dsl)
-        this.jointJsManager.generate(this.ast)
-    }
-    
     //  Used if AST is altered and positions need to be updated
     //  Generates DSL from AST and then reparses the dsl again
     _regenerateDSLAndUpdate (ast, focusNode) {
@@ -157,8 +149,8 @@ export default class sml {
 
         //  Change their type if it matches the old name of the box (element) to the new one
         associations.forEach(asso => {
-            if (asso.get("type") === oldLabel)
-                asso.set("type", newLabel)
+            if (asso.get('type') === oldLabel)
+                asso.set('type', newLabel)
         })
         
         //  Set new label
@@ -174,7 +166,7 @@ export default class sml {
         const elem = this.astq.query(this.ast, `// * [ @id == {id} ]`, {id: id})[0]
 
         //  Delete element
-        if(elem.type() === "Element")
+        if(elem.type() === 'Element')
             elem.P.del(elem)
         else
             elem.P.P.del(elem.P)
