@@ -3,7 +3,7 @@ import { createProtocol }                                   from 'vue-cli-plugin
 import installExtension, { VUEJS_DEVTOOLS }                 from 'electron-devtools-installer'
 import fs                                                   from 'fs'
 import Store                                                from 'electron-store'
-
+import path                                                 from 'path'
 //  Creare store for app
 const appStore = new Store();
 
