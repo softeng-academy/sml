@@ -23,7 +23,7 @@ async function createWindow () {
         height: 1080,
         minHeight: 800,
         minWidth:  800,
-        icon: __dirname + '/../src/resources/images/logo.png',
+        icon: path.join(__dirname, '/../src/resources/images/logo.png'),
         autoHideMenuBar: true,
         frame: false,
         webPreferences: {
