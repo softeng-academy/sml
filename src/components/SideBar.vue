@@ -42,15 +42,7 @@
             </div>
         </v-list-item>
 
-        <div v-html="images[lightOrDark].entity" draggable="true" @dragstart="currentlyDragged = 'entity'" @dragend="currentlyDragged = undefined" class="svg-container" />
-
-        <div v-html="images[lightOrDark].layer" draggable="true" @dragstart="currentlyDragged = 'layer'" @dragend="currentlyDragged = undefined" class="svg-container" />           
-
-        <div v-html="images[lightOrDark].slice" draggable="true" @dragstart="currentlyDragged = 'slice'" @dragend="currentlyDragged = undefined" class="svg-container" />
-
-        <div v-html="images[lightOrDark].state" draggable="true" @dragstart="currentlyDragged = 'state'" @dragend="currentlyDragged = undefined" class="svg-container" />
-
-        <div v-html="images[lightOrDark].type" draggable="true" @dragstart="currentlyDragged = 'type'" @dragend="currentlyDragged = undefined" class="svg-container" />
+        <SideBarIcon v-for="elem in availableElements" v-bind:key="elem" :elemName="elem" @sidebarIconChanged="setCurrentlyDragged"></SideBarIcon>
 
         <template #append>
             <v-divider/>
@@ -79,14 +71,19 @@
 <script>
     import isElectron from 'is-electron'
     import { images } from '../resources/images/boxTypes'
+    import SideBarIcon from './SideBarIcon.vue'
 
     export default {
         name: 'SideBar',
         props: [ 'sml' ],
+        components: {
+            SideBarIcon
+        },
         data () {
             return {
                 currentlyDragged: undefined,
-                images: images
+                images: images,
+                availableElements: ['entity', 'layer', 'slice', 'state', 'type']
             }
         },
         computed: {
@@ -95,15 +92,17 @@
                     return isElectron()
                 else
                     return false
-            },
-            lightOrDark () {
-                return this.$vuetify.theme.dark ? 'light' : 'dark'
             }
         },
         methods: {
             //  Adds new element to the AST
             drop (event) {
                 this.sml.dropNewElem(event.clientX, event.clientY, this.currentlyDragged)
+            },
+
+            //  Set currently dragged node
+            setCurrentlyDragged (draggedName) {
+                this.currentlyDragged = draggedName
             },
 
             //  Changes the visibility of the prop editor
