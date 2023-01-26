@@ -41,8 +41,8 @@
 </template>
 
 <script>
-    import * as monaco                        from 'monaco-editor'
-    import {entityModelExample, stateDiagram} from '../resources/examples'
+    import * as monaco from 'monaco-editor'
+    import { entityModelExample, stateDiagram, SMLArchitecture } from '../resources/examples'
 
     export default {
         name: 'Editor',
@@ -58,8 +58,9 @@
                 modelMarkerTimeout: null,
                 selectedExample: null,
                 examples: [
-                    { name: 'University Entity Model', dsl: entityModelExample},
-                    { name: 'Door State Example', dsl: stateDiagram},
+                    { name: 'University Entity Model', dsl: entityModelExample },
+                    { name: 'Door State', dsl: stateDiagram },
+                    { name: 'SML Architecture', dsl: SMLArchitecture },
                 ],
                 exampleDSL: `OrgUnit:entity @pos(10,5) {
         id:string

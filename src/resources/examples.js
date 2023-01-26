@@ -39,8 +39,7 @@ Lecture: entity @pos(85,5){
 
 LectureUnit: entity @pos(125,5){
     subject: string
-}
-`
+}`
 
 export const stateDiagram = `Opened: state @pos(5,5) @start {
     close: Closed @dock("rt","lt")
@@ -53,4 +52,35 @@ Closed: state @pos(35,5){
 
 Locked: state @pos(65,5){
     unlock : Closed @dock("lb","rb")
+}`
+
+export const SMLArchitecture = `SmlGUI:layer @pos(5,37) {
+    SVG:artifact {
+        propagateGuiEvent: Updater @dock("rb","lt")
+    }
+}
+
+SmlLibrary:layer @pos(40,5) {
+    Ast:entity @pos(39,30) {
+        updateDiagram: Generator @dock("lt","rb")
+        format:        Formatter @dock("rb","lt")
+    }
+    JointJSManager:component {
+        Generator:component {
+            drawDiagram: SVG @dock("lm","rt")
+        }
+        Updater:component @pos(0,48) {
+            updateDataModel: Ast @dock("rt","lb")
+        }
+    }
+    Parser:component @pos(70,7) {
+        update: Ast @dock("bl","rt")
+    }
+    Formatter:component  @pos(70,53){
+        write: SmlFiles @dock("rm","lb")
+    }
+}
+
+SmlFiles:entity @pos(145,40) {
+    read: Parser @dock("lt","rm")
 }`
