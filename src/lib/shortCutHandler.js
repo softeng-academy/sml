@@ -6,8 +6,11 @@ export default class ShortCutHandler {
 
     //  Handles the different short cuts available
     handleKeyPress (e, node, sml, editor) {
+        //  No node selected guard
+        if (!node) return;
+        
         //  Delete
-        if (e.type === 'keydown' && e.key === 'Delete')
+        if (e.type === 'keydown' && (e.key === 'Delete' || e.key === 'Backspace'))
             sml.applyRemove(node.get('id'))
         //  CTRL + c: Copy
         else if (e.type === 'keydown' && e.key === 'c' && e.ctrlKey) {
