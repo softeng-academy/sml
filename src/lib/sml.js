@@ -91,6 +91,7 @@ export default class sml {
             this.dsl =  this.formatter.format(this.ast, false)
             this.updateEditor(this.dsl)
         }
+        this.layouter.positionPositionlessElements(this.ast, this.jointJsManager.getPaper(), this.jointJsManager.getGraph())
         this.showError(output.result.warnings, output.result.errors)
     }
 
@@ -123,7 +124,7 @@ export default class sml {
                 this._unhighlightAll()
                 cellView.highlight()
 
-                // Search box in ast
+                //  Search box in ast
                 clickedNode = this.astq.query(this.ast, `// Element [ / Signature [ @label == {label} ] ]`, {label: attrs.name})[0]
                 
                 // Change position of cursor
@@ -295,6 +296,48 @@ export default class sml {
 
         //  Add element to ast
         this._addToAst(this.ast, signature, tag, spec)
+    }
+
+    //  Handles paste functionality 
+    handlePaste (node) {     
+        //  Get new box name 
+        let allSignaturesLabels = this.astq.query(this.ast, `// Signature [ +// Spec ]`).map(sig => sig.get('label'))
+        let checkForCopies = new RegExp(`${node.child(0).get('label')}(Copy)+`, 'g')
+        let newName = node.child(0).get('label')
+        for (const sig of allSignaturesLabels) {
+            if (sig.match(checkForCopies) && sig.length > newName.length)
+                newName = sig 
+        }
+
+        //  Create and add element
+        let newElem = this.createElemForCopyAndPaste(node, newName + 'Copy')
+        this.ast.add(newElem)
+        this._regenerateDSLAndUpdate(this.ast)
+    }
+
+    //  Handles cut functionality 
+    handleCut (node) {
+        //  Removes element from AST and paste it inside again
+        this.ast.del(this.findFocusInAst(node))
+        let newElem = this.createElemForCopyAndPaste(node, node.child(0).get('label'))
+        this.ast.add(newElem)
+        this._regenerateDSLAndUpdate(this.ast)
+    }
+
+    //  Creates a new element based on the copied data an prepares it to be added again
+    createElemForCopyAndPaste (node, label) {
+        let lastChild = this.ast.child(this.ast.C.length - 1)
+        let newElem = this.asty.create('Element').set({ id: crypto.randomUUID(), space0: lastChild.get('space3').includes('\n') ? '' : '\n' })
+        let newSig = this.asty.create('Signature').set({ 
+            type:  node.child(0).get('type'),
+            label: label,
+            labelSpace1: node.child(0).get('labelSpace1'),
+            labelSpace2: node.child(0).get('labelSpace2'),
+            id: crypto.randomUUID(),
+            lines: 1 
+        })
+        newElem.add([newSig, node.child(1)])
+        return newElem
     }
 
     //  Adds pos tag to AST elements, which represents their position on the paper

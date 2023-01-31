@@ -155,17 +155,13 @@
             //  Sets cursor position and focus editor
             setPosition (pos) {
                 this.editor.setPosition(pos)
-                this.editor.focus()
             },
 
             getDsl () {
                 return this.dsl
             },
 
-            triggerFocus () {
-                this.editor.focus()
-            },
-
+            //  Initializes Monaco editor and defines SML language
             editorSetup () {
                 //  Register sml language if not already registered
                 if (!monaco.languages.getLanguages().find((lang) => lang.id == 'sml')) {
@@ -287,11 +283,10 @@
             //  Reads warning and errors from parser and sets the corresponding markers
             showErrors (warnings, errors) {
                 const modelMarkers = []
-                
+
                 //  Globally set error state if errors are present
-                if (errors?.length > 0) {
+                if (errors?.length > 0)
                     this.$emit('setErrorState', true)
-                }
                 
                 //  Add warnings to markers
                 if (warnings) {
@@ -330,6 +325,16 @@
                 }
                 else 
                     this.modelMarkers = []
+            },
+
+            //  Triggers undo on global event
+            undo () {
+                this.editor.trigger('sml', 'undo')
+            },
+
+            //  Triggers redo on global event
+            redo () {
+                this.editor.trigger('sml', 'redo')
             }
         }
     }
