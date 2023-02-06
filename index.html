@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-<!--
-**  Vingester ~ Ingest Web Contents as Video Streams
-**  Copyright (c) 2021-2022 Dr. Ralf S. Engelschall <rse@engelschall.com>
-**  Licensed under GPL 3.0 <https://spdx.org/licenses/GPL-3.0-only>
--->
 <html>
     <head>
         <title>Simple Modeling Language</title>
@@ -75,8 +70,11 @@
                 flex: 1 1 0;
                 color: #6699cc;
             }
-            .download .download-item:visited, .download-item:active, .download-item:hover  {
+            .download .download-item:visited, .download-item:active {
                 color: #6699cc;
+            }
+            .download .download-item:hover {
+                color: #B07F1F !important;
             }
             .header .logo {
                 margin-right: 40px;
@@ -107,7 +105,6 @@
                 width: 880px;
             }
             footer {
-                margin-top: 20px;
                 font-size: 10pt;
                 text-align: center;
                 color: #909090;
@@ -157,6 +154,29 @@
                 justify-content: center;
                 gap: 32px;
             }
+            .heading3 {
+                width: 100%;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                background: linear-gradient(#282828, #000000);
+            }
+            .heading3 .image-content {
+                align-items: center;
+                justify-content: center;
+                display: flex;
+                height: 100%
+            }
+            .heading3 iframe {
+                height: 80%;
+                width: 80%;
+            }
+            .heading3 * {
+                color: #ffffff;
+            }
             main {
                 display: flex;
                 flex-direction: column;
@@ -168,11 +188,11 @@
                 justify-content: space-evenly;
                 align-items: center;
                 width: 100%;
+                height: 100%;
                 padding-top: 16px;
                 padding-bottom: 16px;
                 gap: 32px;
             }
-
             .feature-container .image-content {
                 flex: 5 1 0;
                 overflow: auto;
@@ -180,6 +200,16 @@
             .feature-container .text-content {
                 flex: 3 1 0;
                 padding: 16px;
+            }
+            .text-content h2 {
+                font-size: 32px;
+            }
+            .text-content p {
+                font-size: 24px;
+            }
+            .text-content p span {
+                color: #6699cc;
+                cursor: pointer;
             }
             footer {
                 height: 32px;
@@ -200,7 +230,7 @@
             .feature-button-wrapper {
                 display: flex;
                 justify-content: end;
-                width: 100%;
+                padding-right: 16px;
             }
             .feature-button {
                 line-height: 120%;
@@ -212,6 +242,24 @@
                 margin-bottom: 16px;
                 text-align: center;
                 cursor: pointer;
+            }
+            .feature-button:hover {
+                border: 1px solid #B07F1F;
+                color: #B07F1F  ;
+            }
+            .cheatsheet-container{
+                margin-left: 10vw;
+            }
+            .cheatsheet-container h2 {
+                font-size: 52px;
+            }
+            .cheatsheet-container p {
+                font-size: 28px;
+            }
+            .feature-button-container {
+                display: flex;
+                justify-content: flex-end;
+                width: 100%;
             }
         </style>
     </head>
@@ -266,10 +314,17 @@
                         <img class="screenshot" src="screenshot.png" alt="Simple Modeling Language Editor"/>
                     </div>
                     <div class="spacer"></div>
-                    <div class="feature-button-wrapper">
-                        <div class="feature-button" onclick="window.document.querySelectorAll('section.heading2')[0].scrollIntoView({behavior: 'smooth'})">
-                           Show me the features
+                    <div class="feature-button-container">
+                        <div class="feature-button-wrapper">
+                            <div class="feature-button" onclick="window.document.querySelectorAll('section.heading2')[0].scrollIntoView({behavior: 'smooth'})">
+                               Show me the features
+                            </div>
                         </div>
+                        <div class="feature-button-wrapper">
+                            <div class="feature-button" onclick="window.document.querySelectorAll('section.heading3')[0].scrollIntoView({behavior: 'smooth'})">
+                               Get me to the Cheatsheet
+                            </div>
+                        </div>  
                     </div>
                 </div>
             </section>
@@ -281,7 +336,7 @@
                     <div class="text-content">
                         <div>
                             <h2> Only editor available that allows full support of user interface interactions and a Domain Specific Language (DSL)!</h2>
-                            <p>What is a DSL and how do I use it? Visit our SML Cheatsheet to get going.</p>
+                            <p>What is a DSL and how do I use it? Visit our <span onclick="window.document.querySelectorAll('section.heading3')[0].scrollIntoView({behavior: 'smooth'})">SML Cheatsheet</span> to get going.</p>
                         </div>
                     </div>
                 </div>
@@ -314,9 +369,24 @@
                 </div>
             </section>
 
+            <section class="heading3">
+                <div class="feature-container">
+                    <div class="text-content">
+                        <div class="cheatsheet-container">
+                            <h2>The Cheatsheet</h2>
+                            <p>All too complicated? This cheatsheet breaks down the most commonly used artifacts of SML.</p>
+                            <p>Learn about SML's DSL and what you can do with it!</p>
+                        </div>
+                    </div>
+                    <div class="image-content">
+                        <iframe src="SMLCheatsheet.pdf"></iframe>
+                    </div>
+                </div>
+            </section>
+
             <footer>
                 <div>
-                    Copyright &copy; 2021-2022  <a href="https://github.com/softeng-academy"> Software Engineering Academy</a><br/>
+                    Copyright &copy; 2021-2023  <a href="https://github.com/softeng-academy"> Software Engineering Academy</a><br/>
                 </div>
             </footer>
         </main>
