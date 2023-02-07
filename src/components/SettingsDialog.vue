@@ -71,12 +71,12 @@
 
 <script>
     import draggable from 'vuedraggable'
-    import {images} from '../resources/images/boxTypes'
+    import { images } from '../resources/images/boxTypes'
 
     export default {
-        components: {draggable},
+        components: { draggable },
         name: 'SettingsDialog',
-        props: ['selectedElems'],
+        props: [ 'selectedElems' ],
         computed: {
             lightOrDark () {
                 return this.$vuetify.theme.dark ? 'light' : 'dark'
@@ -97,12 +97,14 @@
             closeSettings() {
                 this.$emit('closeSettings')
             },
+
             saveAndCloseSettings() {
                 this.$emit('quickAccessChange', this.quickAccess.map(elem => elem.name))
             }
         }
     }
 </script>
+
 <style scoped>
     .preview-image {
         width:  30px;
