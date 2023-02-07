@@ -1,8 +1,8 @@
 <template>
     <v-dialog
         v-model="display"
-        max-width="90%"
-        @click:outside="saveAndCloseSettings"
+        max-width="60%"
+        @click:outside="closeSettings"
     >
         <v-card>
             <v-card-title class="text-h5">
@@ -40,7 +40,7 @@
 
                                 <div class="col-3">
                                     <h3>Available Elements</h3>
-                                    
+
                                     <draggable class="list-group" :class="{dropzone: dragged}" :list="unusedItems" group="quickAccessItems" @start="dragged=true" @end="dragged=false">
                                         <div
                                         class="list-group-item"
@@ -105,19 +105,20 @@
 </script>
 <style scoped>
     .preview-image {
-        width:30px;
-        height:30px;
+        width:  30px;
+        height: 30px;
+        margin:  4px;
     }
     .list-group {
         min-height: 40vh;
-        margin-top: 1em;
-        padding: 4px;
+        margin-top: 6px;
+        padding: 2px;
     }
     .dropzone {
         border: dashed;
         border-radius: 5px;
         border-width: 2px;
-        padding: 2px;
+        padding: 0px;
     }
     .list-group-item{
         display: flex;
@@ -125,11 +126,14 @@
         border: solid;
         border-radius: 13px;
         border-width: 1px;
-        margin: 1em;
-        margin-top: 0em;
+        margin: 8px;
         cursor: grab
     }
     .height-70 {
         height: 70vh
+    }
+    h3 {
+        margin-top: 8px;
+        text-align: center;
     }
 </style>
