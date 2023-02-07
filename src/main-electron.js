@@ -152,3 +152,13 @@ ipcMain.on('darkModeStatus', (event) => {
 ipcMain.on('toggleDarkMode', () => {
     appStore.set('darkMode', !appStore.get('darkMode'))
 })
+
+//  Stores quick access elements
+ipcMain.on('saveQuickAccess', (event, msg) => {
+    appStore.set('quickAccess', msg)
+})
+
+//  Returns saved quick access elements
+ipcMain.on('quickAccessStatus', event => {
+    event.sender.send('quickAccessStatus', appStore.get('quickAccess'))
+})
