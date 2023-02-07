@@ -42,7 +42,7 @@
             </div>
         </v-list-item>
 
-        <SideBarIcon v-for="elem in availableElements" v-bind:key="elem" :elemName="elem" @sidebarIconChanged="setCurrentlyDragged"></SideBarIcon>
+        <SideBarIcon v-for="elem in quickAccessItems" v-bind:key="elem" :elemName="elem" @sidebarIconChanged="setCurrentlyDragged"></SideBarIcon>
 
         <template #append>
             <v-divider/>
@@ -75,7 +75,7 @@
 
     export default {
         name: 'SideBar',
-        props: [ 'sml' ],
+        props: [ 'sml', 'quickAccessItems' ],
         components: {
             SideBarIcon
         },
@@ -83,7 +83,6 @@
             return {
                 currentlyDragged: undefined,
                 images: images,
-                availableElements: ['entity', 'layer', 'slice', 'state', 'type']
             }
         },
         computed: {
