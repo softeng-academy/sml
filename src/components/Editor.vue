@@ -136,7 +136,6 @@
                     clearTimeout(this.modelMarkerTimeout)
                     this.modelMarkerTimeout = setTimeout(() => monaco.editor.setModelMarkers(this.editor.getModel(), 'owner', this.modelMarkers), 250)
                     
-
                     //  Set position to where it was before
                     if (saveCursorPos)
                         this.editor.setPosition(saveCursorPos)
@@ -152,9 +151,10 @@
                     this.sml.formatText()
             },
 
-            //  Sets cursor position and focus editor
+            //  Sets cursor position
             setPosition (pos) {
                 this.editor.setPosition(pos)
+                document.querySelectorAll('textarea')[0].blur()
             },
 
             getDsl () {
@@ -330,11 +330,13 @@
             //  Triggers undo on global event
             undo () {
                 this.editor.trigger('sml', 'undo')
+                document.querySelectorAll('textarea')[0].blur()
             },
 
             //  Triggers redo on global event
             redo () {
                 this.editor.trigger('sml', 'redo')
+                document.querySelectorAll('textarea')[0].blur()
             }
         }
     }
@@ -363,9 +365,7 @@
     .monaco-editor {
         border-radius: 5px;
     }
-
     .overflow-guard {
         border-radius: 5px;
     }
-
 </style>

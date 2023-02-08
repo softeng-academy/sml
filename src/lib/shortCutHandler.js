@@ -5,7 +5,17 @@ export default class ShortCutHandler {
     }
 
     //  Handles the different short cuts available
-    handleKeyPress (e, node, sml, editor) {
+    handleKeyPress (e, node, sml, editor, save) {
+        //  CTRL + z: Undo
+        if (e.type === 'keydown' && e.key === 'z' && e.ctrlKey)
+            editor.undo()
+        //  CTRL + Z: Redo
+        else if (e.type === 'keydown' && e.key === 'Z' && e.ctrlKey)
+            editor.redo()
+        //  CTRL + s: Save
+        else if (e.type === 'keydown' && e.key === 's' && e.ctrlKey)
+            save()
+
         //  No node selected guard
         if (!node) return;
         
@@ -29,11 +39,17 @@ export default class ShortCutHandler {
             else 
                 sml.handleCut(this.copiedData)
         }
-        //  CTRL + z: Undo
-        else if (e.type === 'keydown' && e.key === 'z' && e.ctrlKey)
-            editor.undo()
-        //  CTRL + Z: Redo
-        else if (e.type === 'keydown' && e.key === 'Z' && e.ctrlKey)
-            editor.redo()
+        //  Arrow Right
+        else if (e.type === 'keydown' && e.key === 'ArrowRight')
+            sml.moveBox(node, 1, 0)
+        //  Arrow Left
+        else if (e.type === 'keydown' && e.key === 'ArrowLeft')
+            sml.moveBox(node, -1, 0)
+        //  Arrow Up
+        else if (e.type === 'keydown' && e.key === 'ArrowUp')
+            sml.moveBox(node, 0, -1)
+        //  Arrow Down
+        else if (e.type === 'keydown' && e.key === 'ArrowDown')
+            sml.moveBox(node, 0, 1)
     }
 }

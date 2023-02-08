@@ -443,7 +443,7 @@
 
             //  Passes key presses further to the shortcuthandler instance 
             handleKeyPress (e) {
-                this.SHORTCUTHANDLER.handleKeyPress(e, this.$refs.propEditor?.currentNode, this.sml, this.$refs.editor)                
+                this.SHORTCUTHANDLER.handleKeyPress(e, this.$refs.propEditor?.currentNode, this.sml, this.$refs.editor, this.save)                
             },
 
             //  Sets error message

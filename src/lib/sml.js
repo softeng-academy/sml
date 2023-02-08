@@ -324,6 +324,27 @@ export default class sml {
         this._regenerateDSLAndUpdate(this.ast)
     }
 
+    //  Moves a box with the given x and y movement
+    moveBox (node, xMovement, yMovement) {
+        //  Make update in AST and push new DSL to editor
+        let nodeAst = this.findFocusInAst(node)
+        let posTag = nodeAst.child(0).child(0)
+        if (!posTag) {
+            const newPosTag = this.asty.create('Tag').set({ name: 'pos', args: [ xMovement * 10, yMovement * 10 ], id: crypto.randomUUID() })
+            nodeAst.child(0).add(newPosTag)
+        }
+        else {
+            let args = posTag.get('args')
+            posTag.set('args', [Number(args[0]) + xMovement, Number(args[1]) + yMovement])
+        }
+        this.generateDSL(this.ast)
+
+        //  Move box accordingly
+        let cellOfNewNode = this.jointJsManager.getGraph().getElements().filter(x => x.attributes.name === node.child(0).get("label"))?.[0]
+        cellOfNewNode.position(cellOfNewNode.position().x + (xMovement * 10), cellOfNewNode.position().y + (yMovement * 10), { deep: true })
+        cellOfNewNode.findView(this.jointJsManager.getPaper()).highlight()
+    }
+
     //  Creates a new element based on the copied data an prepares it to be added again
     createElemForCopyAndPaste (node, label) {
         let lastChild = this.ast.child(this.ast.C.length - 1)
