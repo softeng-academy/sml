@@ -33,6 +33,7 @@
                 parsingTimeout: null,
                 modelMarkers: [],
                 modelMarkerTimeout: null,
+                pushUndoStopTimeout: null,
                 exampleDSL: `OrgUnit:entity @pos(10,5) {
         id:string
         initials:string
@@ -126,7 +127,6 @@
                         text: this.dsl,
                         range: fullRange
                     }]);
-                    this.editor.pushUndoStop();
 
                     //  Force tokenization to disallow flickering
                     const model = this.editor.getModel()
@@ -135,6 +135,10 @@
                     //  Resets model marker every 250ms
                     clearTimeout(this.modelMarkerTimeout)
                     this.modelMarkerTimeout = setTimeout(() => monaco.editor.setModelMarkers(this.editor.getModel(), 'owner', this.modelMarkers), 250)
+                    
+                    //  Pushes changes only after 250ms to the undo stack to avoid too many small changes
+                    clearTimeout(this.pushUndoStopTimeout)
+                    this.pushUndoStopTimeout = setTimeout(() => this.editor.pushUndoStop(), 250)
                     
                     //  Set position to where it was before
                     if (saveCursorPos)
