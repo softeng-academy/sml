@@ -54,8 +54,8 @@ export default class sml {
     }
 
     //  Generates DSL from AST and AST again from DSL
-    regenerateDSLOnASTChanges (ast) {
-        this._regenerateDSLAndUpdate(ast)
+    regenerateDSLOnASTChanges (ast, focusNode) {
+        this._regenerateDSLAndUpdate(ast, focusNode)
     }
 
     //  Generate AST from DSL
@@ -86,12 +86,18 @@ export default class sml {
             this.dsl =  this.formatter.format(this.ast, false)
             this.updateEditor(this.dsl)
             this.initiatePropEditor(this.findFocusInAst(focusNode))
+
+            //  If focus node is present, highlight the corresponding box
+            if (focusNode) {
+                let cellOfNewNode = this.jointJsManager.getGraph().getElements().filter(x => x.attributes.name === focusNode.child(0).get('label'))?.[0]
+                cellOfNewNode.findView(this.jointJsManager.getPaper()).highlight()
+            }
         }
         else {
-            this.dsl =  this.formatter.format(this.ast, false)
+            this.dsl = this.formatter.format(this.ast, false)
             this.updateEditor(this.dsl)
         }
-        this.layouter.positionPositionlessElements(this.ast, this.jointJsManager.getPaper(), this.jointJsManager.getGraph())
+        this.layouter.positionPositionlessElements(this.ast, this.jointJsManager.getPaper(), this.jointJsManager.getGraph(), focusNode)
         this.showError(output.result.warnings, output.result.errors)
     }
 
@@ -312,7 +318,7 @@ export default class sml {
         //  Create and add element
         let newElem = this.createElemForCopyAndPaste(node, newName + 'Copy')
         this.ast.add(newElem)
-        this._regenerateDSLAndUpdate(this.ast)
+        this._regenerateDSLAndUpdate(this.ast, node)
     }
 
     //  Handles cut functionality 
@@ -340,7 +346,7 @@ export default class sml {
         this.generateDSL(this.ast)
 
         //  Move box accordingly
-        let cellOfNewNode = this.jointJsManager.getGraph().getElements().filter(x => x.attributes.name === node.child(0).get("label"))?.[0]
+        let cellOfNewNode = this.jointJsManager.getGraph().getElements().filter(x => x.attributes.name === node.child(0).get('label'))?.[0]
         cellOfNewNode.position(cellOfNewNode.position().x + (xMovement * 10), cellOfNewNode.position().y + (yMovement * 10), { deep: true })
         cellOfNewNode.findView(this.jointJsManager.getPaper()).highlight()
     }

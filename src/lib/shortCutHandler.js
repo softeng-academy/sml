@@ -15,7 +15,14 @@ export default class ShortCutHandler {
         //  CTRL + s: Save
         else if (e.type === 'keydown' && e.key === 's' && e.ctrlKey)
             save()
-
+        //  CTRL + v: Paste
+        else if (e.type === 'keydown' && e.key === 'v' && e.ctrlKey) {
+            if (this.copiedData && !this.cut)
+                sml.handlePaste(this.copiedData)
+            else 
+                sml.handleCut(this.copiedData)
+        }
+        
         //  No node selected guard
         if (!node) return;
         
@@ -31,13 +38,6 @@ export default class ShortCutHandler {
         else if (e.type === 'keydown' && e.key === 'x' && e.ctrlKey) {
             this.cut = true
             this.copiedData = node
-        }
-        //  CTRL + v: Paste
-        else if (e.type === 'keydown' && e.key === 'v' && e.ctrlKey) {
-            if (this.copiedData && !this.cut)
-                sml.handlePaste(this.copiedData)
-            else 
-                sml.handleCut(this.copiedData)
         }
         //  Arrow Right
         else if (e.type === 'keydown' && e.key === 'ArrowRight')
