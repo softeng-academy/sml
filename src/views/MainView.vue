@@ -106,12 +106,14 @@
     import TitleBar         from '../components/TitleBar.vue'
     import SettingsDialog   from '../components/SettingsDialog.vue'
     import SML              from '../lib/sml.js'
+    import shortCutHandler  from '../lib/shortCutHandler'
 
     export default {
         name: 'MainView',
         components: { SideBar, TitleBar, Editor, PropEditor, SettingsDialog},
         async mounted () {
             localStorage.setItem('dsl', '')
+            this.SHORTCUTHANDLER = new shortCutHandler()
 
             //  Temporarily add global event listeners for dragger widget
             this.$refs.dragger.addEventListener('mousedown', () => {
@@ -123,6 +125,7 @@
 
             //  Add global window event listeners
             window.addEventListener('resize', this.handleResize)
+            window.addEventListener('keydown', this.handleKeyPress)
 
             if (isElectron()) {
                 //  Add file saving and loading listeners via electron
@@ -216,6 +219,7 @@
                 snackbarText: '',
                 unsaved: false,
                 exporting: false,
+                SHORTCUTHANDLER: null,
                 quickAccessItems: ['entity', 'layer', 'slice', 'state',]
             }
         },
@@ -250,7 +254,7 @@
                 //  Store current DSL and force recreation of editor and sml
                 localStorage.setItem('dsl', this.$refs.editor.getDsl())
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark
-
+                
                 //  Persist change
                 if(isElectron()) {
                     electron = await electron
@@ -435,6 +439,11 @@
                 //  Set height corresponding to calculations
                 this.$refs.editorRow.style.height = 'calc(' + editorPercent + '% - 24px)'
                 this.$refs.jointjsRow.style.height = jointJSPercent + '%'
+            },
+
+            //  Passes key presses further to the shortcuthandler instance 
+            handleKeyPress (e) {
+                this.SHORTCUTHANDLER.handleKeyPress(e, this.$refs.propEditor?.currentNode, this.sml, this.$refs.editor, this.save)                
             },
 
             //  Sets error message

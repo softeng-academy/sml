@@ -186,7 +186,7 @@ export default class Parser {
             }
         })
 
-        // Ensure that tags are not duplicated
+        //  Ensure that tags are not duplicated
         this.astq.query(ast, `// Signature [ / Tag [ @name ] ] `).forEach((node) => {
             const alreadyFlagged = []
             const tags = node.C

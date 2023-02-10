@@ -91,7 +91,7 @@
                 electron.ipcRenderer.send('close')
             },
 
-            // Request window status from electron on resize event
+            //  Request window status from electron on resize event
             getWindowStatus () {
                 electron.ipcRenderer.send('windowStatus')
             }

@@ -33,6 +33,7 @@
                 parsingTimeout: null,
                 modelMarkers: [],
                 modelMarkerTimeout: null,
+                pushUndoStopTimeout: null,
                 exampleDSL: `OrgUnit:entity @pos(10,5) {
         id:string
         initials:string
@@ -126,7 +127,6 @@
                         text: this.dsl,
                         range: fullRange
                     }]);
-                    this.editor.pushUndoStop();
 
                     //  Force tokenization to disallow flickering
                     const model = this.editor.getModel()
@@ -136,7 +136,10 @@
                     clearTimeout(this.modelMarkerTimeout)
                     this.modelMarkerTimeout = setTimeout(() => monaco.editor.setModelMarkers(this.editor.getModel(), 'owner', this.modelMarkers), 250)
                     
-
+                    //  Pushes changes only after 250ms to the undo stack to avoid too many small changes
+                    clearTimeout(this.pushUndoStopTimeout)
+                    this.pushUndoStopTimeout = setTimeout(() => this.editor.pushUndoStop(), 250)
+                    
                     //  Set position to where it was before
                     if (saveCursorPos)
                         this.editor.setPosition(saveCursorPos)
@@ -152,20 +155,17 @@
                     this.sml.formatText()
             },
 
-            //  Sets cursor position and focus editor
+            //  Sets cursor position
             setPosition (pos) {
                 this.editor.setPosition(pos)
-                this.editor.focus()
+                document.querySelectorAll('textarea')[0].blur()
             },
 
             getDsl () {
                 return this.dsl
             },
 
-            triggerFocus () {
-                this.editor.focus()
-            },
-
+            //  Initializes Monaco editor and defines SML language
             editorSetup () {
                 //  Register sml language if not already registered
                 if (!monaco.languages.getLanguages().find((lang) => lang.id == 'sml')) {
@@ -287,11 +287,10 @@
             //  Reads warning and errors from parser and sets the corresponding markers
             showErrors (warnings, errors) {
                 const modelMarkers = []
-                
+
                 //  Globally set error state if errors are present
-                if (errors?.length > 0) {
+                if (errors?.length > 0)
                     this.$emit('setErrorState', true)
-                }
                 
                 //  Add warnings to markers
                 if (warnings) {
@@ -330,6 +329,18 @@
                 }
                 else 
                     this.modelMarkers = []
+            },
+
+            //  Triggers undo on global event
+            undo () {
+                this.editor.trigger('sml', 'undo')
+                document.querySelectorAll('textarea')[0].blur()
+            },
+
+            //  Triggers redo on global event
+            redo () {
+                this.editor.trigger('sml', 'redo')
+                document.querySelectorAll('textarea')[0].blur()
             }
         }
     }
@@ -358,9 +369,7 @@
     .monaco-editor {
         border-radius: 5px;
     }
-
     .overflow-guard {
         border-radius: 5px;
     }
-
 </style>
