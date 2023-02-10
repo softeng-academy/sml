@@ -27,7 +27,7 @@
                     <v-list-item
                         v-for="(example, i) in examples"
                         :key="i"
-                        @click="selectExample(i)"
+                        @click="exampleDialog = true"
                     >
 
                     <v-list-item-title>{{ example.name }}</v-list-item-title>
@@ -37,7 +37,31 @@
         </v-menu>
 
         <div ref="editor" class="editor-container-editor"/>
-    </div>
+
+        <v-dialog v-model="exampleDialog" width="500">
+            <v-card>
+                <v-card-title class="text-h5">Caution du hond</v-card-title>
+
+                <v-divider/>
+
+                <v-card-text>Changes will be überschrieben habibi</v-card-text>
+
+                <v-divider/>
+
+                <v-card-actions>
+                    <v-spacer/>
+
+                    <v-btn color="primary" text @click="selectExample">
+                        Accept
+                    </v-btn>
+
+                    <v-btn color="danger" text @click="exampleDialog = false; selectedExample = null">
+                        Abort
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </div>    
 </template>
 
 <script>
@@ -57,6 +81,7 @@
                 modelMarkers: [],
                 modelMarkerTimeout: null,
                 selectedExample: null,
+                exampleDialog: false,
                 examples: [
                     { name: 'University Entity Model', dsl: entityModelExample },
                     { name: 'Door State', dsl: stateDiagram },
@@ -143,11 +168,13 @@
                 else
                     this.sml.updateDSL(this.dsl)
             },
-
+            
             //  Selects an example and parses corresponding DSL
-            selectExample(id) {
-                this.updateEditor(this.examples[id].dsl)
+            selectExample() {
+                this.updateEditor(this.examples[this.selectedExample].dsl)
                 this.parse()
+                this.selectedExample = null
+                this.exampleDialog = false
             },
 
             //  Handles updates of editor from UI
