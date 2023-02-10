@@ -5,7 +5,7 @@ export default class Layouter {
         this.asty = asty
     }
 
-    positionPositionlessElements(ast, paper, graph) {
+    positionPositionlessElements(ast, paper, graph, focusNode) {
         //  Get all elements that are positioned and that are not positioned with their areas
         let nonPositionedElements      = this.astq.query(ast, `/ Element [ / Spec && ! */Signature/Tag [@name == "pos"] ] `)
         let nonPositionedElementsIds   = nonPositionedElements.map(elem => elem.get('id'))
@@ -72,11 +72,11 @@ export default class Layouter {
 
         //  If there are positions, add their position tags and regenerate
         if (positions.length > 0)
-            this._addPosTagsViaAreas(positions, nonPositionedElements, ast)
+            this._addPosTagsViaAreas(positions, nonPositionedElements, ast, focusNode)
     }
 
     //  Searches the new positions for each element and adds the pos tag accordingly
-    _addPosTagsViaAreas(areas, nonPositionedElements, ast) {
+    _addPosTagsViaAreas(areas, nonPositionedElements, ast, focusNode) {
         for (const elem of nonPositionedElements) {
             let correspondingArea = areas.find(x => x.id === elem.get('id'))
             const newPosTag = this.asty.create('Tag').set({ name: 'pos', args: [ Math.round(correspondingArea.area.x / 10), Math.round(correspondingArea.area.y / 10) ], id: crypto.randomUUID()})
@@ -86,7 +86,7 @@ export default class Layouter {
         }
         
         //  Regenerates both DSL and AST
-        this.sml.regenerateDSLOnASTChanges(ast)
+        this.sml.regenerateDSLOnASTChanges(ast, focusNode)
     }
 
     //  Checks if two rectangles overlap

@@ -5,6 +5,7 @@
         <v-container fluid class="fill-height fill-width pl-14 pr-0 overflow-hidden" :style="{paddingTop: runningInElectron ? '46px' : '16px'}">
             <SideBar ref="sidebar" 
                 :sml="sml" 
+                :quickAccessItems="quickAccessItems"
                 @updatePropVisibility="updatePropVisibility" 
                 @toggleDarkMode="toggleDarkMode"
                 @saveAs="saveAs" 
@@ -86,7 +87,10 @@
                 class="fill-width">
             </PropEditor>
         </v-container>
+
         <input ref="fileInput" type="file" accept=".sml,.svg" style="display:none" @change="handleFileChange"/>
+
+        <SettingsDialog v-if="settingsDialog" :selectedElems="quickAccessItems" @quickAccessChange="saveQuickAccessAndCloseSettings" @closeSettings="closeSettings"></SettingsDialog>
     </div>
 </template>
 
@@ -100,13 +104,16 @@
     import Editor           from '../components/Editor'
     import PropEditor       from '../components/PropEditor'
     import TitleBar         from '../components/TitleBar.vue'
+    import SettingsDialog   from '../components/SettingsDialog.vue'
     import SML              from '../lib/sml.js'
+    import shortCutHandler  from '../lib/shortCutHandler'
 
     export default {
         name: 'MainView',
-        components: { SideBar, TitleBar, Editor, PropEditor },
+        components: { SideBar, TitleBar, Editor, PropEditor, SettingsDialog},
         async mounted () {
             localStorage.setItem('dsl', '')
+            this.SHORTCUTHANDLER = new shortCutHandler()
 
             //  Temporarily add global event listeners for dragger widget
             this.$refs.dragger.addEventListener('mousedown', () => {
@@ -118,6 +125,7 @@
 
             //  Add global window event listeners
             window.addEventListener('resize', this.handleResize)
+            window.addEventListener('keydown', this.handleKeyPress)
 
             if (isElectron()) {
                 //  Add file saving and loading listeners via electron
@@ -169,11 +177,24 @@
                         this.$vuetify.theme.dark = data
                     }
                 })
+
+                //  Get saved quickAccess configuration
+                electron.ipcRenderer.on('quickAccessStatus', (event, data) => {
+                    if (data)
+                        this.quickAccessItems = JSON.parse(data)
+                }) 
                 
                 //  Request dark mode
                 electron.ipcRenderer.send('darkModeStatus')
+
+                //  Request quickAccess bar
+                electron.ipcRenderer.send('quickAccessStatus')
             }
             else {
+                const quickAccessItems = localStorage.getItem('quickAccess')
+                if(quickAccessItems) {
+                    this.quickAccessItems = JSON.parse(quickAccessItems)
+                }
                 if (this.$refs?.editor) {
                     localStorage.setItem('dsl', this.$refs.editor.getDsl())
                     this.$vuetify.theme.dark = localStorage.getItem('darkMode') === 'true' ?? false
@@ -193,10 +214,13 @@
                 errorState: false,
                 sml: null,
                 currentFile: null,
+                settingsDialog: false,
                 snackbarOpen: false,
                 snackbarText: '',
                 unsaved: false,
-                exporting: false
+                exporting: false,
+                SHORTCUTHANDLER: null,
+                quickAccessItems: ['entity', 'layer', 'slice', 'state',]
             }
         },
         computed: {
@@ -208,12 +232,29 @@
             }
         },
         methods: {
+            //  Closes settings dialog and saves selected quickAccess elements
+            saveQuickAccessAndCloseSettings (payload) {
+                this.quickAccessItems = payload
+                this.closeSettings()
+                if(isElectron()) {
+                    electron.ipcRenderer.send('saveQuickAccess', JSON.stringify(payload))
+                }
+                else {
+                    localStorage.setItem('quickAccess', JSON.stringify(payload))
+                }
+            },
+
+            //  CLoses settings dialog
+            closeSettings() {
+                this.settingsDialog = false
+            },
+
             //  Handles toggling of dark mode
             async toggleDarkMode () {
                 //  Store current DSL and force recreation of editor and sml
                 localStorage.setItem('dsl', this.$refs.editor.getDsl())
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark
-
+                
                 //  Persist change
                 if(isElectron()) {
                     electron = await electron
@@ -400,6 +441,11 @@
                 this.$refs.jointjsRow.style.height = jointJSPercent + '%'
             },
 
+            //  Passes key presses further to the shortcuthandler instance 
+            handleKeyPress (e) {
+                this.SHORTCUTHANDLER.handleKeyPress(e, this.$refs.propEditor?.currentNode, this.sml, this.$refs.editor, this.save)                
+            },
+
             //  Sets error message
             setErrorState (val) {
                 this.errorState = val
@@ -459,8 +505,9 @@
 
             //  Opens the settings of the application
             openSettings () {
-                this.snackbarText = 'Not yet implemented.'
+                this.snackbarText = 'Not yet fully implemented.'
                 this.snackbarOpen = true
+                this.settingsDialog = true
             }
         }
     }

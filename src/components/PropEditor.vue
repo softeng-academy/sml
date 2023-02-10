@@ -360,7 +360,7 @@
                 }
             },
 
-            // Removes element from AST
+            //  Removes element from AST
             removeElement () {
                 this.sml.applyRemove(this.currentNode.get('id'))
             },
@@ -375,7 +375,7 @@
                 this.sml.applyRemove(id, this.currentNode)
             },
 
-            // Renames atribute in ast
+            //  Renames atribute in ast
             renameAttribute (payload) {
                 this.sml.applyRename(payload.label, payload.id)
             },

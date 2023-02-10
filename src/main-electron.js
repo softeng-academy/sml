@@ -3,7 +3,7 @@ import { createProtocol }                                   from 'vue-cli-plugin
 import installExtension, { VUEJS_DEVTOOLS }                 from 'electron-devtools-installer'
 import fs                                                   from 'fs'
 import Store                                                from 'electron-store'
-
+import path                                                 from 'path'
 //  Creare store for app
 const appStore = new Store();
 
@@ -23,7 +23,7 @@ async function createWindow () {
         height: 1080,
         minHeight: 800,
         minWidth:  800,
-        icon: __dirname + '/../src/resources/images/logo.png',
+        icon: path.join(__dirname, '/../src/resources/images/logo.png'),
         autoHideMenuBar: true,
         frame: false,
         webPreferences: {
@@ -151,4 +151,14 @@ ipcMain.on('darkModeStatus', (event) => {
 //  Stores dark mode data
 ipcMain.on('toggleDarkMode', () => {
     appStore.set('darkMode', !appStore.get('darkMode'))
+})
+
+//  Stores quick access elements
+ipcMain.on('saveQuickAccess', (event, msg) => {
+    appStore.set('quickAccess', msg)
+})
+
+//  Returns saved quick access elements
+ipcMain.on('quickAccessStatus', event => {
+    event.sender.send('quickAccessStatus', appStore.get('quickAccess'))
 })

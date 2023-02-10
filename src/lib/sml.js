@@ -54,8 +54,8 @@ export default class sml {
     }
 
     //  Generates DSL from AST and AST again from DSL
-    regenerateDSLOnASTChanges (ast) {
-        this._regenerateDSLAndUpdate(ast)
+    regenerateDSLOnASTChanges (ast, focusNode) {
+        this._regenerateDSLAndUpdate(ast, focusNode)
     }
 
     //  Generate AST from DSL
@@ -76,14 +76,6 @@ export default class sml {
         this.updateEditor(this.dsl)
     }
 
-    //  DEPRECATED
-    //  Used if DSL needs to be generated from an AST and the change is not present in UI already (embedding)
-    _generateDSLAndUpdate (ast) {
-        this.dsl = this.formatter.format(ast, false)
-        this.updateEditor(this.dsl)
-        this.jointJsManager.generate(this.ast)
-    }
-    
     //  Used if AST is altered and positions need to be updated
     //  Generates DSL from AST and then reparses the dsl again
     _regenerateDSLAndUpdate (ast, focusNode) {
@@ -94,11 +86,18 @@ export default class sml {
             this.dsl =  this.formatter.format(this.ast, false)
             this.updateEditor(this.dsl)
             this.initiatePropEditor(this.findFocusInAst(focusNode))
+
+            //  If focus node is present, highlight the corresponding box
+            if (focusNode) {
+                let cellOfNewNode = this.jointJsManager.getGraph().getElements().filter(x => x.attributes.name === focusNode.child(0).get('label'))?.[0]
+                cellOfNewNode.findView(this.jointJsManager.getPaper()).highlight()
+            }
         }
         else {
-            this.dsl =  this.formatter.format(this.ast, false)
+            this.dsl = this.formatter.format(this.ast, false)
             this.updateEditor(this.dsl)
         }
+        this.layouter.positionPositionlessElements(this.ast, this.jointJsManager.getPaper(), this.jointJsManager.getGraph(), focusNode)
         this.showError(output.result.warnings, output.result.errors)
     }
 
@@ -131,7 +130,7 @@ export default class sml {
                 this._unhighlightAll()
                 cellView.highlight()
 
-                // Search box in ast
+                //  Search box in ast
                 clickedNode = this.astq.query(this.ast, `// Element [ / Signature [ @label == {label} ] ]`, {label: attrs.name})[0]
                 
                 // Change position of cursor
@@ -157,8 +156,8 @@ export default class sml {
 
         //  Change their type if it matches the old name of the box (element) to the new one
         associations.forEach(asso => {
-            if (asso.get("type") === oldLabel)
-                asso.set("type", newLabel)
+            if (asso.get('type') === oldLabel)
+                asso.set('type', newLabel)
         })
         
         //  Set new label
@@ -174,7 +173,7 @@ export default class sml {
         const elem = this.astq.query(this.ast, `// * [ @id == {id} ]`, {id: id})[0]
 
         //  Delete element
-        if(elem.type() === "Element")
+        if(elem.type() === 'Element')
             elem.P.del(elem)
         else
             elem.P.P.del(elem.P)
@@ -303,6 +302,69 @@ export default class sml {
 
         //  Add element to ast
         this._addToAst(this.ast, signature, tag, spec)
+    }
+
+    //  Handles paste functionality 
+    handlePaste (node) {     
+        //  Get new box name 
+        let allSignaturesLabels = this.astq.query(this.ast, `// Signature [ +// Spec ]`).map(sig => sig.get('label'))
+        let checkForCopies = new RegExp(`${node.child(0).get('label')}(Copy)+`, 'g')
+        let newName = node.child(0).get('label')
+        for (const sig of allSignaturesLabels) {
+            if (sig.match(checkForCopies) && sig.length > newName.length)
+                newName = sig 
+        }
+
+        //  Create and add element
+        let newElem = this.createElemForCopyAndPaste(node, newName + 'Copy')
+        this.ast.add(newElem)
+        this._regenerateDSLAndUpdate(this.ast, node)
+    }
+
+    //  Handles cut functionality 
+    handleCut (node) {
+        //  Removes element from AST and paste it inside again
+        this.ast.del(this.findFocusInAst(node))
+        let newElem = this.createElemForCopyAndPaste(node, node.child(0).get('label'))
+        this.ast.add(newElem)
+        this._regenerateDSLAndUpdate(this.ast)
+    }
+
+    //  Moves a box with the given x and y movement
+    moveBox (node, xMovement, yMovement) {
+        //  Make update in AST and push new DSL to editor
+        let nodeAst = this.findFocusInAst(node)
+        let posTag = nodeAst.child(0).child(0)
+        if (!posTag) {
+            const newPosTag = this.asty.create('Tag').set({ name: 'pos', args: [ xMovement * 10, yMovement * 10 ], id: crypto.randomUUID() })
+            nodeAst.child(0).add(newPosTag)
+        }
+        else {
+            let args = posTag.get('args')
+            posTag.set('args', [Number(args[0]) + xMovement, Number(args[1]) + yMovement])
+        }
+        this.generateDSL(this.ast)
+
+        //  Move box accordingly
+        let cellOfNewNode = this.jointJsManager.getGraph().getElements().filter(x => x.attributes.name === node.child(0).get('label'))?.[0]
+        cellOfNewNode.position(cellOfNewNode.position().x + (xMovement * 10), cellOfNewNode.position().y + (yMovement * 10), { deep: true })
+        cellOfNewNode.findView(this.jointJsManager.getPaper()).highlight()
+    }
+
+    //  Creates a new element based on the copied data an prepares it to be added again
+    createElemForCopyAndPaste (node, label) {
+        let lastChild = this.ast.child(this.ast.C.length - 1)
+        let newElem = this.asty.create('Element').set({ id: crypto.randomUUID(), space0: lastChild.get('space3').includes('\n') ? '' : '\n' })
+        let newSig = this.asty.create('Signature').set({ 
+            type:  node.child(0).get('type'),
+            label: label,
+            labelSpace1: node.child(0).get('labelSpace1'),
+            labelSpace2: node.child(0).get('labelSpace2'),
+            id: crypto.randomUUID(),
+            lines: 1 
+        })
+        newElem.add([newSig, node.child(1)])
+        return newElem
     }
 
     //  Adds pos tag to AST elements, which represents their position on the paper

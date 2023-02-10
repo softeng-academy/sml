@@ -76,7 +76,7 @@ export default class Parser {
         let signatures = this.astq.query(ast, `// Element [ / Spec ] / Signature`)
         signatures.forEach((sig, index) => {
             for (let i = index + 1; i < signatures.length; i++) {
-                if (sig.get('label') === signatures[i].get('label')) {
+                if (sig.get('label') === signatures[i].get('label') && sig.get('label').length > 0) {
                     valid = false
                     let message = `The following names appear more than once: ${sig.get('label')}`
                     sourceCodeErrors.push({
@@ -186,7 +186,7 @@ export default class Parser {
             }
         })
 
-        // Ensure that tags are not duplicated
+        //  Ensure that tags are not duplicated
         this.astq.query(ast, `// Signature [ / Tag [ @name ] ] `).forEach((node) => {
             const alreadyFlagged = []
             const tags = node.C

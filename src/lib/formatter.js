@@ -45,7 +45,7 @@ export default class Formatter {
         //  e.g. User: entity { \n
         dsl += ast.child(0).get('label') + ':' + ast.child(0).get('type')
 
-        // Add constraint text to the DSL
+        //  Add constraint text to the DSL
         const constraint = ast.child(0).get('constraint')
         if (constraint)
             dsl +=  constraint !== '*' ? ` ${constraint}` : `${constraint}`
