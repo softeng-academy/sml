@@ -40,13 +40,11 @@
 
         <v-dialog v-model="exampleDialog" width="500">
             <v-card>
-                <v-card-title class="text-h5">Caution du hond</v-card-title>
+                <v-card-title class="text-h5">Caution</v-card-title>
 
-                <v-divider/>
-
-                <v-card-text>Changes will be überschrieben habibi</v-card-text>
-
-                <v-divider/>
+                <v-card-text>
+                    <p>Changes will be overwritten</p>
+                </v-card-text>
 
                 <v-card-actions>
                     <v-spacer/>
