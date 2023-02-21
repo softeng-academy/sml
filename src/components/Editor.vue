@@ -63,8 +63,10 @@
 </template>
 
 <script>
-    import * as monaco from 'monaco-editor'
+    import * as monaco                                           from 'monaco-editor'
     import { entityModelExample, stateDiagram, SMLArchitecture } from '../resources/examples'
+    import { boxTypeRegEx, basicTypesRegEx, tagsRegEx }          from '../lib/monacoTokenizer'
+    import { boxNames, dataTypes, tagTypes, connectionTags }     from '../lib/constants'
 
     export default {
         name: 'Editor',
@@ -87,21 +89,21 @@
                 ],
                 pushUndoStopTimeout: null,
                 exampleDSL: `OrgUnit:entity @pos(10,5) {
-        id:string
-        initials:string
-        name:string
-        parentUnit:OrgUnit [0..1] @dock("lm","tm")
-        director:Person @dock("bm","bm")
-        members:Person [0..n] @dock("rb","lb")
-    }
+    id:string
+    initials:string
+    name:string
+    parentUnit:OrgUnit [0..1] @dock("lm","tm")
+    director:Person @dock("bm","bm")
+    members:Person [0..n] @dock("rb","lb")
+}
 
-    Person:entity @pos(45,5) {
-        id:string
-        initials:string
-        name:string
-        belongsTo:OrgUnit @dock("lt","rt")
-        supervisor:Person [0..1] @dock("rm","tr")
-    }`
+Person:entity @pos(45,5) {
+    id:string
+    initials:string
+    name:string
+    belongsTo:OrgUnit @dock("lt","rt")
+    supervisor:Person [0..1] @dock("rm","tr")
+}`
             }
         },
         mounted () {
@@ -237,9 +239,9 @@
                     monaco.languages.setMonarchTokensProvider('sml', {
                         tokenizer: {
                             root: [
-                                [ /\bentity\b|\bstate\b|\blayer\b|\bslice\b|\btype\b|\benumeration\b/g, 'boxType' ],
-                                [ /\bint\b|\bstring\b|\bboolean\b|\bfloat\b/g, 'attributeType' ],
-                                [ /@[a-zA-Z]*/g, 'tag' ],
+                                [ boxTypeRegEx, 'boxType' ],
+                                [ basicTypesRegEx, 'attributeType' ],
+                                [ tagsRegEx, 'tag' ],
                                 [ /{|}|\(|\)|\[|\]/g, 'bracket' ],
                                 [ /((\*|[0-9]+|[a-zA-Z])\.\.(\*|[0-9]+|[a-zA-Z]))|\*|\+|\?/g, 'cardinality' ],
                                 { include: '@whitespace' }
@@ -261,58 +263,59 @@
                     //  Register completion item provider for sml
                     monaco.languages.registerCompletionItemProvider('sml', {
                         provideCompletionItems: () => {
+
+                            //  Setup box autocompletion
+                            const boxNameCompletion = []
+                            boxNames.forEach(name => {
+                                boxNameCompletion.push({
+                                    label: name,
+                                    kind: monaco.languages.CompletionItemKind.Text,
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                    insertText: `${name} {\n\t$1\n}` ,
+                                })
+                            })
+
+                            //  Setup datatype autocompletion
+                            const dataTypeCompletion = []
+                            dataTypes.forEach(name => {
+                                dataTypeCompletion.push({
+                                    label: name,
+                                    kind: monaco.languages.CompletionItemKind.Text,
+                                    insertText: `${name}` ,
+                                })
+                            })
+        
+                            //  Setup tag autocompletion
+                            const tagTypeCompletion = []
+                            tagTypes.forEach(name => {
+                                tagTypeCompletion.push({
+                                    label: name,
+                                    kind: monaco.languages.CompletionItemKind.Text,
+                                    insertText: `${name}` ,
+                                })
+                            })
+                            const connectionTagsCompletion = []
+                            connectionTags.forEach(name => {
+                                connectionTagsCompletion.push({
+                                    label: name + '("","")',
+                                    kind: monaco.languages.CompletionItemKind.Text,
+                                    insertText: `${name}("$1", "$2")` ,
+                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                                })
+                            })
+
+                            //  Setup default suggestions
                             const suggestions = [
                                 {
                                     label: 'new box',
                                     kind: monaco.languages.CompletionItemKind.Keyword,
-                                    //  eslint-disable-next-line
                                     insertText: 'name:boxType {\n\t\n}',
                                     insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                                     documentation: 'Template to create a new entity'
                                 },
-                                {
-                                    label: '1..*',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    insertText: '1..*'
-                                },
-                                {
-                                    label: 'entity',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    insertText: 'entity {\n}',
-                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                                },
-                                {
-                                    label: 'state',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    insertText: 'state {\n}',
-                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                                },
-                                {
-                                    label: 'layer',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    insertText: 'layer {\n}',
-                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                                },
-                                {
-                                    label: 'slice',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    //  eslint-disable-next-line
-                                    insertText: 'slice {\n    ${1: content}\n}',
-                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                                },
-                                {
-                                    label: 'type',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    insertText: 'type {\n}',
-                                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                                },
-                                {
-                                    label: 'string',
-                                    kind: monaco.languages.CompletionItemKind.Text,
-                                    insertText: 'string'
-                                }
                             ]
-                            return { suggestions: suggestions }
+                            
+                            return { suggestions: suggestions.concat(boxNameCompletion, dataTypeCompletion, tagTypeCompletion, connectionTagsCompletion) }
                         }
                     })
                 }
