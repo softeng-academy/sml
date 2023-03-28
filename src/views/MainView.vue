@@ -91,6 +91,9 @@
         <input ref="fileInput" type="file" accept=".sml,.svg" style="display:none" @change="handleFileChange"/>
 
         <SettingsDialog v-if="settingsDialog" :selectedElems="quickAccessItems" @quickAccessChange="saveQuickAccessAndCloseSettings" @closeSettings="closeSettings"></SettingsDialog>
+        <div>
+            <div class="please" id='widthCalculator' >Person</div>
+        </div>
     </div>
 </template>
 
@@ -579,5 +582,10 @@
     }
     .prop-editor {
         max-width: 360px;
+    }
+    .please {
+        font-family: "Roboto", sans-serif;
+        line-height: 1.5;
+        font-size: 18px;
     }
 </style>

@@ -2,9 +2,11 @@ import { images } from '../../resources/images/boxTypes'
 export default class JointJsGenerator {
     constructor (config, joint, graph, astq, sml, linkRouter, darkMode) {
         this.associations    = []
-        this.headerOffset    = config.headerOffset
         this.attributeOffset = config.attributeOffset
         this.boxStdSize      = config.boxStdSize
+        this.fontSizeHeader  = config.fontSizeBody
+        this.fontSizeHeader  = config.fontSizeHeader
+        this.config          = config
         this.joint           = joint
         this.graph           = graph
         this.astq            = astq
@@ -44,6 +46,13 @@ export default class JointJsGenerator {
             }
         })
         return { xPos, yPos }
+    }
+
+    _measureText = (inputString, fontSize) => {
+        const measureDiv = document.getElementById('widthCalculator')
+        measureDiv.innerHTML = inputString
+        measureDiv.style.fontSize = fontSize + 'px'
+        return measureDiv.getBoundingClientRect().width
     }
 
     generate = (ast) => {
@@ -87,7 +96,7 @@ export default class JointJsGenerator {
     _recGenerate = (ast, index, numOfAttrs, parentX, parentY) => {
         //  Determine position of box
         let posX = parentX + 10
-        let posY = parentY + 60 + numOfAttrs * 20
+        let posY = parentY//parentY + 60 + numOfAttrs * 20
         const tags = this.astq.query(ast, `/ Signature / Tag [ @name == "pos" ]`)
         if (tags.length !== 0) {
             const x = Number.parseInt(tags[0].get('args')[0] * 10)
@@ -105,7 +114,6 @@ export default class JointJsGenerator {
             posY
         )
         box.prop('ast', ast)
-
         //  Declaration of containers
         const children = []
         const attributes = []
@@ -173,6 +181,31 @@ export default class JointJsGenerator {
         })
         this.graph.addCells(attributes)
 
+        //  Find the longest attribute
+        let longestAttributeNameLength = 0
+        let longestAttributeTypeLength = 0
+        for (const attribute of attributes) {
+            const currentAttributeName = attribute.attributes.attrs.attributeName.text + '&nbsp;'
+            const currentAttributeType = attribute.attributes.attrs.attributeType.text
+
+            const currentAttributeNameLength = this._measureText(currentAttributeName, this.config.fontSizeBody)
+            if (longestAttributeNameLength < currentAttributeNameLength) 
+                longestAttributeNameLength = currentAttributeNameLength
+            
+            const currentAttributeTypeLength = this._measureText(currentAttributeType, this.config.fontSizeBody)
+            if (longestAttributeTypeLength < currentAttributeTypeLength) 
+                longestAttributeTypeLength = currentAttributeTypeLength
+        }
+
+        //  Set every attribute length to the longest attribute's length
+        const longestAttributeLength = longestAttributeNameLength + longestAttributeTypeLength
+        for( const attribute of attributes){
+            attribute.resize(longestAttributeLength, this.config.fontSizeBody)
+            attribute.attr('attributeName/width', longestAttributeNameLength / (longestAttributeNameLength + longestAttributeTypeLength) * 100 + '%')
+            attribute.attr('attributeType/refX', longestAttributeNameLength / (longestAttributeNameLength + longestAttributeTypeLength) * 100 + '%')
+            attribute.attr('attributeType/width', longestAttributeTypeLength / (longestAttributeNameLength + longestAttributeTypeLength) * 100 + '%')
+        }
+        
         //  Determine child boxed and add them to child container
         let deepestChild = 0
         this.astq.query(ast, `/ Spec / Element [ * / Spec ]`).forEach((node) => {
@@ -190,6 +223,18 @@ export default class JointJsGenerator {
         this.graph.addCells(children)
         this.graph.addCells(box)
 
+        // Determine required width
+        let iconBoxSize = 50
+        let requiredHeaderWidth = this.config.attributeOffsetLeft + iconBoxSize + Math.max(
+            this._measureText(ast.child(0).get('label'), this.fontSizeHeader), 
+            this._measureText(ast.child(0).get('type'), this.fontSizeHeader),
+        )
+        box.resize(Math.max(requiredHeaderWidth, longestAttributeLength + this.config.attributeOffsetLeft * 2), 1)
+
+        //  Increase box size to fit attributes
+        const requiredHeight = attributes.length * this.config.fontSizeBody + this.config.dividerOffset + this.config.attributeOffsetTop * 2 * Math.min(attributes.length, 1) - box.attributes.size.height
+        box.resize(box.attributes.size.width, requiredHeight)
+
         //  Position children within parent based on height
         if (children.length > 0) {
             //  Position children
@@ -198,9 +243,9 @@ export default class JointJsGenerator {
                 const posTag = this.astq.query(child.attributes.ast, `/ Signature / Tag [ @name == "pos" ]`)[0]
                 //  Only reposition if no position is given by DSL
                 if (!posTag) {
-                    child.position(child.position().x + childWidthSum, child.position().y, { deep: true })
-                    const x = child.position().x - (box.position().x + 10)
-                    const y = child.position().y - (box.position().y + 60 + attributes.length * 20)
+                    child.position(child.position().x + childWidthSum, child.position().y + requiredHeight, { deep: true })
+                    const x = child.position().x - (box.position().x + this.config.attributeOffsetLeft)
+                    const y = child.position().y - (box.position().y + requiredHeight)
                     if (x > 0 || y > 0)
                         this.sml.addPositionTag(child, x, y)
                     childWidthSum += child.size().width + 10
@@ -214,10 +259,10 @@ export default class JointJsGenerator {
             return { box, children, attributes, test: deepestChild, height: box.attributes.size.height }
         }
         else {
-            //  Increase box size incase attributes extend standard size
-            const requiredIncrease = attributes.length * 20 + 60 - this.boxStdSize // 60 === header offset
-            if (requiredIncrease > 0)
-                box.resize(this.boxStdSize, this.boxStdSize + requiredIncrease)
+            //  Hide divider line if no attributes are present
+            if (attributes.length === 0)
+                box.attr('divider/visibility', 'hidden')
+            
             return { box, children, attributes, test: index, height: box.attributes.size.height }
         }
     }
@@ -237,7 +282,7 @@ export default class JointJsGenerator {
         //  Set box props and resize to the default size
         box.prop('name', name)
         box.prop('technicalId', id)
-        box.resize(this.boxStdSize, this.boxStdSize)
+        box.resize(50, 50)
         return box
     }
 
@@ -245,20 +290,18 @@ export default class JointJsGenerator {
     _positionAttribute = (name, type, tags, box, index) => {
         //  Position and size attribute
         const parentPosition = box.attributes.position
-        const parentSize = box.attributes.size
         const position = {
-            x: parentPosition.x,
-            y: parentPosition.y + (this.headerOffset + this.attributeOffset * index) * parentSize.height
+            x: parentPosition.x + this.config.attributeOffsetLeft,
+            y: parentPosition.y + this.config.dividerOffset + index * this.config.fontSizeBody + this.config.attributeOffsetTop
         }
         const attribute = new this.joint.shapes.sml.Attribute({ position })
-        attribute.resize(200, 20)
-
+        //attribute.resize(box.attributes.size.width, this.config.fontSizeBody)
         //  Set attributes content, embed it and return attribute
         tags.forEach((tag) => {
             type += ` @${tag.get('name')}(${tag.get('args').join(', ')})`
         })
-        attribute.attr('attributeName/textWrap/text', name)
-        attribute.attr('attributeType/textWrap/text', type)
+        attribute.attr('attributeName/text', name)
+        attribute.attr('attributeType/text', type)
         box.embed(attribute)
         return attribute
     }

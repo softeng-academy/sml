@@ -2,24 +2,25 @@ export default class JointJsConfig {
     constructor (joint, darkMode) {
         this.joint           = joint
         this.darkMode        = darkMode
-        this.headerOffset    = 0.27
-        this.headerSize      = this.headerOffset - 0.02
         this.attributeOffset = 0.1
-        this.boxStdSize      = 200
+        this.boxStdSize      = 150 // 200
 
-        this.attributeOffsetLeft = 4
-        this.attributeOffsetTop  = 8
-        this.iconBoxOffset       = 8
-        this.fontsizeHeader      = this.boxStdSize * 0.09
-        this.fontsizeBody        = this.boxStdSize * 0.07
+        this.attributeOffsetLeft = 10
+        this.attributeOffsetTop  = 10
+        this.fontSizeHeader      = 50 // this.boxStdSize * 0.09
+        this.fontSizeBody        = 30 // this.boxStdSize * 0.07
     }
 
     //  Returns config for the generator
     getConfig = () => {
         return {
-            headerOffset:    this.headerOffset,
-            attributeOffset: this.attributeOffset,
-            boxStdSize:      this.boxStdSize
+            headerOffset:        this.headerOffset,
+            attributeOffsetTop:  this.attributeOffsetTop,
+            attributeOffsetLeft: this.attributeOffsetLeft,
+            boxStdSize:          this.boxStdSize,
+            fontSizeBody:        this.fontSizeBody,
+            fontSizeHeader:      this.fontSizeHeader,
+            dividerOffset:       this._dividerOffset(),
         }
     }
 
@@ -27,6 +28,10 @@ export default class JointJsConfig {
     initElements = () => {
         this._initShapes()
         this._initLinks()
+    }
+
+    _dividerOffset = () => {
+        return this.fontSizeHeader * 2 + this.attributeOffsetTop * 2
     }
 
     //  Initializes all shapes used in sml
@@ -48,7 +53,7 @@ export default class JointJsConfig {
                 },
                 divider: {
                     refX:        0,
-                    refY:        50,
+                    refY:        this.fontSizeHeader * 2 + this.attributeOffsetTop * 2,//50,
                     refWidth:    '100%',
                     height:      0.01,
                     strokeWidth: 1,
@@ -60,24 +65,24 @@ export default class JointJsConfig {
                     refX:       this.attributeOffsetLeft,
                     refY:       this.attributeOffsetTop,
                     fill:       this.darkMode ? '#FFFFFF' : '#000000',
-                    fontSize:   this.fontsizeHeader,
+                    fontSize:   this.fontSizeHeader,
                     textWrap: {
                         text:     '',
-                        width:    '80%',
-                        height:   (this.headerSize * 100) / 2 + '%',
+                        width:    '100%',
+                        height:   this.fontSizeHeader + 'px',
                         ellipsis: true
                     }
                 },
                 boxType: {
                     textAnchor: 'left',
                     refX:       this.attributeOffsetLeft,
-                    refY:       20 + this.attributeOffsetTop,
+                    refY:       this.fontSizeHeader + this.attributeOffsetTop,
                     fill:       this.darkMode ? '#FFFFFF' : '#000000',
-                    fontSize:   this.fontsizeHeader,
+                    fontSize:   this.fontSizeHeader,
                     textWrap: {
                         text:     '',
                         width:    '80%',
-                        height:   (this.headerSize * 100) / 2 + '%',
+                        height:   this.fontSizeHeader + 'px',
                         ellipsis: true
                     }
                 },
@@ -277,25 +282,23 @@ export default class JointJsConfig {
             attrs: {
                 attributeName: {
                     textAnchor: 'left',
-                    refX:       '2%',
+                    refX:       '0%',
                     fill:       this.darkMode ? '#FFFFFF' : '#000000',
-                    fontSize:   this.fontsizeBody,
-                    textWrap: {
-                        text:     '',
-                        width:    '45%',
-                        ellipsis: true
-                    }
+                    fontSize:   this.fontSizeBody,
+                    text:     '',
+                    width:    '48%',
+                    //height:   this.fontSizeBody + 'px',
+                    ellipsis: true
                 },
                 attributeType: {
                     textAnchor: 'left',
-                    refX:       '52%',
+                    refX:       '50%',
                     fill:       this.darkMode ? '#FFFFFF' : '#000000',
-                    fontSize:   this.fontsizeBody,
-                    textWrap: {
-                        text:     '',
-                        width:    '45%',
-                        ellipsis: true
-                    }
+                    fontSize:   this.fontSizeBody,
+                    text:     '',
+                    width:    '48%',
+                    ellipsis: true
+                    
                 }
             },
             markup: [
